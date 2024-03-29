@@ -27,10 +27,12 @@ class TechnicalAdminAPITest extends TestCase
 
         $this->actingAs($user);
 
-        TechnicalAdmin::factory()
-            ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::TECHNICAL_ADMIN)->first()))
-            ->count(5)
-            ->create();
+        for ($i = 0; $i < 5; $i++) {
+            TechnicalAdmin::factory()
+                ->withExpectedCode()
+                ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::TECHNICAL_ADMIN)->first()))
+                ->create();
+        }
 
         $response = $this->json('GET', '/api/v1/technical-admins');
 
@@ -75,7 +77,7 @@ class TechnicalAdminAPITest extends TestCase
             ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::TECHNICAL_ADMIN)->first()))
             ->create();
 
-        $response = $this->json('GET', '/api/v1/technical-admin/'.$technicalAdmin->id);
+        $response = $this->json('GET', '/api/v1/technical-admin/' . $technicalAdmin->id);
 
         $response->assertSuccessful();
     }
@@ -97,7 +99,7 @@ class TechnicalAdminAPITest extends TestCase
             ->make(['code' => 'AUTO'])
             ->toArray();
 
-        $response = $this->json('POST', '/api/v1/technical-admin/'.$technicalAdmin->id, $updatedTechnicalAdmin);
+        $response = $this->json('POST', '/api/v1/technical-admin/' . $technicalAdmin->id, $updatedTechnicalAdmin);
 
         $response->assertSuccessful();
 
@@ -123,7 +125,7 @@ class TechnicalAdminAPITest extends TestCase
             ->make(['code' => $technicalAdmin->code])
             ->toArray();
 
-        $response = $this->json('POST', '/api/v1/technical-admin/'.$technicalAdmin->id, $updatedTechnicalAdmin);
+        $response = $this->json('POST', '/api/v1/technical-admin/' . $technicalAdmin->id, $updatedTechnicalAdmin);
 
         $response->assertSuccessful();
 
@@ -151,7 +153,7 @@ class TechnicalAdminAPITest extends TestCase
             ->make(['code' => $existingTechnicalAdmin->code])
             ->toArray();
 
-        $response = $this->json('POST', '/api/v1/technical-admin/'.$newTechnicalAdmin->id, $updatedTechnicalAdmin);
+        $response = $this->json('POST', '/api/v1/technical-admin/' . $newTechnicalAdmin->id, $updatedTechnicalAdmin);
 
         $response->assertStatus(422);
     }
@@ -168,13 +170,13 @@ class TechnicalAdminAPITest extends TestCase
             ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::TECHNICAL_ADMIN)->first()))
             ->create(['is_active' => true]);
 
-        $response = $this->json('POST', '/api/v1/technical-admin/active/'.$technicalAdmin->id, ['is_active' => false]);
+        $response = $this->json('POST', '/api/v1/technical-admin/active/' . $technicalAdmin->id, ['is_active' => false]);
 
         $response->assertSuccessful();
 
         $this->assertDatabaseHas('technical_admins', ['id' => $technicalAdmin->id, 'is_active' => false]);
 
-        $response = $this->json('POST', '/api/v1/technical-admin/active/'.$technicalAdmin->id, ['is_active' => true]);
+        $response = $this->json('POST', '/api/v1/technical-admin/active/' . $technicalAdmin->id, ['is_active' => true]);
 
         $response->assertSuccessful();
 
@@ -193,7 +195,7 @@ class TechnicalAdminAPITest extends TestCase
             ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::TECHNICAL_ADMIN)->first()))
             ->create();
 
-        $response = $this->json('DELETE', '/api/v1/technical-admin/'.$technicalAdmin->id);
+        $response = $this->json('DELETE', '/api/v1/technical-admin/' . $technicalAdmin->id);
 
         $response->assertSuccessful();
 

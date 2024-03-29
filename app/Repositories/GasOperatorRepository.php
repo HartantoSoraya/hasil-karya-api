@@ -98,7 +98,7 @@ class GasOperatorRepository implements GasOperatorRepositoryInterface
 
     public function generateCode(int $tryCount): string
     {
-        $count = GasOperator::count() + 1 + $tryCount;
+        $count = GasOperator::withTrashed()->count() + 1 + $tryCount;
         $code = 'GASOP'.str_pad($count, 4, '0', STR_PAD_LEFT);
 
         return $code;

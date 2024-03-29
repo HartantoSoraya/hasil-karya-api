@@ -97,7 +97,7 @@ class TechnicalAdminRepository implements TechnicalAdminRepositoryInterface
 
     public function generateCode(int $tryCount): string
     {
-        $count = TechnicalAdmin::count() + 1 + $tryCount;
+        $count = TechnicalAdmin::withTrashed()->count() + 1 + $tryCount;
         $code = 'TA'.str_pad($count, 4, '0', STR_PAD_LEFT);
 
         return $code;

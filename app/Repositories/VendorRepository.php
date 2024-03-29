@@ -66,7 +66,7 @@ class VendorRepository implements VendorRepositoryInterface
 
     public function generateCode(int $tryCount): string
     {
-        $count = Vendor::count() + 1 + $tryCount;
+        $count = Vendor::withTrashed()->count() + 1 + $tryCount;
         $code = 'VENDOR'.str_pad($count, 3, '0', STR_PAD_LEFT);
 
         return $code;

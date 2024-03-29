@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Illuminate\Support\Str;
 use App\Enum\ProjectStatusEnum;
 use App\Repositories\ProjectRepository;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -15,20 +16,11 @@ class ProjectFactory extends Factory
      */
     public function definition(): array
     {
-        $projectRepository = new ProjectRepository();
-
-        $code = '';
-        $tryCount = 0;
-        do {
-            $code = $projectRepository->generateCode($tryCount);
-            $tryCount++;
-        } while (! $projectRepository->isUniqueCode($code));
-
         $start_date = $this->faker->date();
         $end_date = $this->faker->dateTimeBetween($start_date, '+1 year')->format('Y-m-d');
 
         return [
-            'code' => strval($this->faker->randomNumber(5)),
+            'code' => Str::random(10),
             'name' => $this->faker->name,
             'description' => $this->faker->text,
             'start_date' => $start_date,
@@ -41,5 +33,23 @@ class ProjectFactory extends Factory
             'subdistrict' => $this->faker->secondaryAddress,
             'status' => $this->faker->randomElement(ProjectStatusEnum::toArray()),
         ];
+    }
+
+    public function withExpectedCode(): self
+    {
+        return $this->state(function (array $attributes) {
+            $projectRepository = new ProjectRepository();
+
+            $code = '';
+            $tryCount = 0;
+            do {
+                $code = $projectRepository->generateCode($tryCount);
+                $tryCount++;
+            } while (! $projectRepository->isUniqueCode($code));
+
+            return [
+                'code' => $code,
+            ];
+        });
     }
 }

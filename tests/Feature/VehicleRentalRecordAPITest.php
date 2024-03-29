@@ -33,9 +33,13 @@ class VehicleRentalRecordAPITest extends TestCase
             ->for(Vendor::factory())
             ->create();
 
-        $vehicleRentalRecords = VehicleRentalRecord::factory()
-            ->for($truck)
-            ->count(5)->create();
+        $vehicleRentalRecords = [];
+        for ($i = 0; $i < 5; $i++) {
+            $vehicleRentalRecords[] = VehicleRentalRecord::factory()
+                ->withExpectedCode()
+                ->for($truck)
+                ->create();
+        }
 
         $response = $this->json('GET', '/api/v1/vehicle-rental-records');
 
@@ -59,7 +63,6 @@ class VehicleRentalRecordAPITest extends TestCase
         $response = $this->json('GET', '/api/v1/vehicle-rental-records/read/due');
 
         $response->assertSuccessful();
-
     }
 
     public function test_vehicle_rental_record_api_call_create_with_auto_code_expect_success()
@@ -103,7 +106,7 @@ class VehicleRentalRecordAPITest extends TestCase
             ->for($truck)
             ->create();
 
-        $response = $this->json('GET', '/api/v1/vehicle-rental-record/'.$vehicleRentalRecord->id);
+        $response = $this->json('GET', '/api/v1/vehicle-rental-record/' . $vehicleRentalRecord->id);
 
         $response->assertSuccessful();
     }
@@ -128,7 +131,7 @@ class VehicleRentalRecordAPITest extends TestCase
             ->for($truck)
             ->make()->toArray();
 
-        $response = $this->json('POST', '/api/v1/vehicle-rental-record/'.$vehicleRentalRecord->id, $updatedVehicleRentalRecord);
+        $response = $this->json('POST', '/api/v1/vehicle-rental-record/' . $vehicleRentalRecord->id, $updatedVehicleRentalRecord);
 
         $response->assertSuccessful();
 
@@ -157,7 +160,7 @@ class VehicleRentalRecordAPITest extends TestCase
             ->for($truck)
             ->make(['code' => $vehicleRentalRecord->code])->toArray();
 
-        $response = $this->json('POST', '/api/v1/vehicle-rental-record/'.$vehicleRentalRecord->id, $updatedVehicleRentalRecord);
+        $response = $this->json('POST', '/api/v1/vehicle-rental-record/' . $vehicleRentalRecord->id, $updatedVehicleRentalRecord);
 
         $response->assertSuccessful();
 
@@ -190,7 +193,7 @@ class VehicleRentalRecordAPITest extends TestCase
             ->for($truck)
             ->make(['code' => $existingVehicleRentalRecord->code])->toArray();
 
-        $response = $this->json('POST', '/api/v1/vehicle-rental-record/'.$newVehicleRentalRecord->id, $updatedVehicleRentalRecord);
+        $response = $this->json('POST', '/api/v1/vehicle-rental-record/' . $newVehicleRentalRecord->id, $updatedVehicleRentalRecord);
 
         $response->assertStatus(422);
     }
@@ -211,13 +214,13 @@ class VehicleRentalRecordAPITest extends TestCase
             ->for($truck)
             ->create(['is_paid' => false]);
 
-        $response = $this->json('POST', '/api/v1/vehicle-rental-record/payment/'.$vehicleRentalRecord->id, ['is_paid' => true]);
+        $response = $this->json('POST', '/api/v1/vehicle-rental-record/payment/' . $vehicleRentalRecord->id, ['is_paid' => true]);
 
         $response->assertSuccessful();
 
         $this->assertDatabaseHas('vehicle_rental_records', ['id' => $vehicleRentalRecord->id, 'is_paid' => true]);
 
-        $response = $this->json('POST', '/api/v1/vehicle-rental-record/payment/'.$vehicleRentalRecord->id, ['is_paid' => false]);
+        $response = $this->json('POST', '/api/v1/vehicle-rental-record/payment/' . $vehicleRentalRecord->id, ['is_paid' => false]);
 
         $response->assertSuccessful();
 
@@ -240,7 +243,7 @@ class VehicleRentalRecordAPITest extends TestCase
             ->for($truck)
             ->create();
 
-        $response = $this->json('DELETE', '/api/v1/vehicle-rental-record/'.$vehicleRentalRecord->id);
+        $response = $this->json('DELETE', '/api/v1/vehicle-rental-record/' . $vehicleRentalRecord->id);
 
         $response->assertSuccessful();
 

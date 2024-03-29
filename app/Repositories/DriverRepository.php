@@ -62,7 +62,7 @@ class DriverRepository implements DriverRepositoryInterface
 
     public function generateCode(int $tryCount): string
     {
-        $count = Driver::count() + 1 + $tryCount;
+        $count = Driver::withTrashed()->count() + 1 + $tryCount;
         $code = 'DRV'.str_pad($count, 2, '0', STR_PAD_LEFT);
 
         return $code;

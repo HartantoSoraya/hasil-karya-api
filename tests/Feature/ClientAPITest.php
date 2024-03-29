@@ -26,8 +26,11 @@ class ClientAPITest extends TestCase
             ->create();
 
         $this->actingAs($user);
-
-        $clients = Client::factory()->count(5)->create();
+        
+        $clients = [];
+        for ($i = 0; $i < 5; $i++) {
+            $clients[] = Client::factory()->withExpectedCode()->create();
+        }
 
         $response = $this->json('GET', '/api/v1/clients');
 

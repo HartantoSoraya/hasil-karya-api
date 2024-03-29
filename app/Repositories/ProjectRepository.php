@@ -130,7 +130,7 @@ class ProjectRepository implements ProjectRepositoryInterface
 
     public function generateCode(int $tryCount): string
     {
-        $count = Project::count() + 1 + $tryCount;
+        $count = Project::withTrashed()->count() + 1 + $tryCount;
         $code = 'PRJ'.str_pad($count, 4, '0', STR_PAD_LEFT);
 
         return $code;

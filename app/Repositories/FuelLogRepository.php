@@ -103,7 +103,7 @@ class FuelLogRepository implements FuelLogRepositoryInterface
 
     public function generateCode(int $tryCount): string
     {
-        $count = FuelLog::count() + 1 + $tryCount;
+        $count = FuelLog::withTrashed()->count() + 1 + $tryCount;
         $code = 'FL'.str_pad($count, 3, '0', STR_PAD_LEFT);
 
         return $code;

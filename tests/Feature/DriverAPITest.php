@@ -27,7 +27,9 @@ class DriverAPITest extends TestCase
 
         $this->actingAs($user);
 
-        Driver::factory()->count(5)->create();
+        for ($i = 0; $i < 5; $i++) {
+            Driver::factory()->withExpectedCode()->create();
+        }
 
         $response = $this->json('GET', '/api/v1/drivers');
 

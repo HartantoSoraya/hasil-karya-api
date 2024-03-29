@@ -362,7 +362,7 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
 
     public function generateCode(int $tryCount): string
     {
-        $count = MaterialMovement::count() + 1 + $tryCount;
+        $count = MaterialMovement::withTrashed()->count() + 1 + $tryCount;
         $code = 'MM'.str_pad($count, 2, '0', STR_PAD_LEFT);
 
         return $code;

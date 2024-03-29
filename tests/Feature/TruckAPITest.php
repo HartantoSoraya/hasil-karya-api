@@ -28,9 +28,9 @@ class TruckAPITest extends TestCase
 
         $this->actingAs($user);
 
-        Truck::factory()
-            ->for(Vendor::factory())
-            ->count(5)->create();
+        for ($i = 0; $i < 5; $i++) {
+            Truck::factory()->withExpectedCode()->for(Vendor::factory())->create();
+        }
 
         $response = $this->json('GET', '/api/v1/trucks');
 
@@ -71,7 +71,7 @@ class TruckAPITest extends TestCase
             ->for(Vendor::factory())
             ->create();
 
-        $response = $this->json('GET', '/api/v1/truck/'.$truck->id);
+        $response = $this->json('GET', '/api/v1/truck/' . $truck->id);
 
         $response->assertSuccessful();
     }
@@ -93,7 +93,7 @@ class TruckAPITest extends TestCase
             ->make(['code' => 'AUTO'])
             ->toArray();
 
-        $response = $this->json('POST', '/api/v1/truck/'.$truck->id, $updatedTruck);
+        $response = $this->json('POST', '/api/v1/truck/' . $truck->id, $updatedTruck);
 
         $response->assertSuccessful();
 
@@ -119,7 +119,7 @@ class TruckAPITest extends TestCase
             ->make(['code' => $truck->code])
             ->toArray();
 
-        $response = $this->json('POST', '/api/v1/truck/'.$truck->id, $updatedTruck);
+        $response = $this->json('POST', '/api/v1/truck/' . $truck->id, $updatedTruck);
 
         $response->assertSuccessful();
 
@@ -147,7 +147,7 @@ class TruckAPITest extends TestCase
             ->make(['code' => $existingTruck->code])
             ->toArray();
 
-        $response = $this->json('POST', '/api/v1/truck/'.$newTruck->id, $updatedTruck);
+        $response = $this->json('POST', '/api/v1/truck/' . $newTruck->id, $updatedTruck);
 
         $response->assertStatus(422);
     }
@@ -164,13 +164,13 @@ class TruckAPITest extends TestCase
             ->for(Vendor::factory())
             ->create(['is_active' => true]);
 
-        $response = $this->json('POST', '/api/v1/truck/active/'.$truck->id, ['is_active' => false]);
+        $response = $this->json('POST', '/api/v1/truck/active/' . $truck->id, ['is_active' => false]);
 
         $response->assertSuccessful();
 
         $this->assertDatabaseHas('trucks', ['id' => $truck->id, 'is_active' => false]);
 
-        $response = $this->json('POST', '/api/v1/truck/active/'.$truck->id, ['is_active' => true]);
+        $response = $this->json('POST', '/api/v1/truck/active/' . $truck->id, ['is_active' => true]);
 
         $response->assertSuccessful();
 
@@ -189,7 +189,7 @@ class TruckAPITest extends TestCase
             ->for(Vendor::factory())
             ->create();
 
-        $response = $this->json('DELETE', '/api/v1/truck/'.$truck->id);
+        $response = $this->json('DELETE', '/api/v1/truck/' . $truck->id);
 
         $response->assertSuccessful();
 
@@ -211,7 +211,7 @@ class TruckAPITest extends TestCase
             ->for(Vendor::factory())
             ->create();
 
-        $response = $this->json('GET', '/api/v1/truck/check-availability/'.$truck->id);
+        $response = $this->json('GET', '/api/v1/truck/check-availability/' . $truck->id);
 
         $response->assertSuccessful();
     }

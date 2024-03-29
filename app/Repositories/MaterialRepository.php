@@ -51,7 +51,7 @@ class MaterialRepository implements MaterialRepositoryInterface
 
     public function generateCode(int $tryCount): string
     {
-        $count = Material::count() + $tryCount;
+        $count = Material::withTrashed()->count() + $tryCount;
         $code = 'MATERIAL'.str_pad($count, 2, '0', STR_PAD_LEFT);
 
         return $code;

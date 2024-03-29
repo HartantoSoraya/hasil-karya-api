@@ -100,7 +100,7 @@ class VehicleRentalRecordRepository implements VehicleRentalRecordRepositoryInte
 
     public function generateCode(int $tryCount): string
     {
-        $count = VehicleRentalRecord::count() + 1 + $tryCount;
+        $count = VehicleRentalRecord::withTrashed()->count() + 1 + $tryCount;
         $code = 'VRR'.str_pad($count, 3, '0', STR_PAD_LEFT);
 
         return $code;

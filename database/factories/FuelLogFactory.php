@@ -25,15 +25,6 @@ class FuelLogFactory extends Factory
      */
     public function definition(): array
     {
-        $fuelLogRepository = new FuelLogRepository();
-
-        $code = '';
-        $tryCount = 0;
-        do {
-            $code = $fuelLogRepository->generateCode($tryCount);
-            $tryCount++;
-        } while (! $fuelLogRepository->isUniqueCode($code));
-
         return [
             'code' => strval(Str::random(10)),
             'date' => $this->faker->dateTimeThisMonth()->format('Y-m-d H:i:s'),
@@ -91,6 +82,24 @@ class FuelLogFactory extends Factory
                 'station_id' => $station->id,
                 'gas_operator_id' => $gasOperator->id,
                 'odometer' => 0,
+            ];
+        });
+    }
+
+    public function withExpectedCode(): self
+    {
+        return $this->state(function (array $attributes) {
+            $fuelLogRepository = new FuelLogRepository();
+
+            $code = '';
+            $tryCount = 0;
+            do {
+                $code = $fuelLogRepository->generateCode($tryCount);
+                $tryCount++;
+            } while (! $fuelLogRepository->isUniqueCode($code));
+
+            return [
+                'code' => $code,
             ];
         });
     }

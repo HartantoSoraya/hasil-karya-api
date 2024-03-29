@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Illuminate\Support\Str;
 use App\Repositories\TechnicalAdminRepository;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -14,17 +15,8 @@ class TechnicalAdminFactory extends Factory
      */
     public function definition(): array
     {
-        $technicalAdminRepository = new TechnicalAdminRepository();
-
-        $code = '';
-        $tryCount = 0;
-        do {
-            $code = $technicalAdminRepository->generateCode($tryCount);
-            $tryCount++;
-        } while (! $technicalAdminRepository->isUniqueCode($code));
-
         return [
-            'code' => $code,
+            'code' => Str::random(10),
             'name' => $this->faker->name,
             'is_active' => $this->faker->boolean,
         ];
@@ -36,6 +28,24 @@ class TechnicalAdminFactory extends Factory
             return [
                 'email' => $this->faker->unique()->safeEmail,
                 'password' => 'password',
+            ];
+        });
+    }
+
+    public function withExpectedCode(): self
+    {
+        return $this->state(function (array $attributes) {
+            $technicalAdminRepository = new TechnicalAdminRepository();
+
+            $code = '';
+            $tryCount = 0;
+            do {
+                $code = $technicalAdminRepository->generateCode($tryCount);
+                $tryCount++;
+            } while (! $technicalAdminRepository->isUniqueCode($code));
+
+            return [
+                'code' => $code,
             ];
         });
     }

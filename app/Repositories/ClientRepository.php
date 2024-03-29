@@ -70,7 +70,7 @@ class ClientRepository implements ClientRepositoryInterface
 
     public function generateCode(int $tryCount): string
     {
-        $count = Client::count() + 1 + $tryCount;
+        $count = Client::withTrashed()->count() + 1 + $tryCount;
         $code = 'CL'.str_pad($count, 5, '0', STR_PAD_LEFT);
 
         return $code;

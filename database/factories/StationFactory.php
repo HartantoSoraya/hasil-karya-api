@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use Illuminate\Support\Str;
 use App\Enum\StationCategoryEnum;
 use App\Repositories\StationRepository;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -15,19 +16,10 @@ class StationFactory extends Factory
      */
     public function definition(): array
     {
-        $stationRepository = new StationRepository();
-
-        $code = '';
-        $tryCount = 0;
-        do {
-            $code = $stationRepository->generateCode($tryCount);
-            $tryCount++;
-        } while (! $stationRepository->isUniqueCode($code));
-
         $categories = StationCategoryEnum::toArray();
 
         return [
-            'code' => $code,
+            'code' => Str::random(10),
             'name' => $this->faker->name,
             'province' => $this->faker->state,
             'regency' => $this->faker->city,
@@ -47,6 +39,24 @@ class StationFactory extends Factory
                 'regency' => null,
                 'district' => null,
                 'subdistrict' => null,
+            ];
+        });
+    }
+
+    public function withExpectedCode(): self
+    {
+        return $this->state(function (array $attributes) {
+            $stationRepository = new StationRepository();
+
+            $code = '';
+            $tryCount = 0;
+            do {
+                $code = $stationRepository->generateCode($tryCount);
+                $tryCount++;
+            } while (! $stationRepository->isUniqueCode($code));
+
+            return [
+                'code' => $code,
             ];
         });
     }

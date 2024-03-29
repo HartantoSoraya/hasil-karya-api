@@ -98,7 +98,7 @@ class CheckerRepository implements CheckerRepositoryInterface
 
     public function generateCode(int $tryCount): string
     {
-        $count = Checker::count() + 1 + $tryCount;
+        $count = Checker::withTrashed()->count() + 1 + $tryCount;
         $code = 'CHK'.str_pad($count, 2, '0', STR_PAD_LEFT);
 
         return $code;

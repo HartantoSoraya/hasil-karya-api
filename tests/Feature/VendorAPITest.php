@@ -27,7 +27,9 @@ class VendorAPITest extends TestCase
 
         $this->actingAs($user);
 
-        Vendor::factory()->count(5)->create();
+        for ($i = 0; $i < 5; $i++) {
+            Vendor::factory()->withExpectedCode()->create();
+        }
 
         $response = $this->json('GET', '/api/v1/vendors');
 

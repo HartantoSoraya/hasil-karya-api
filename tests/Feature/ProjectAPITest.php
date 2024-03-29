@@ -36,7 +36,10 @@ class ProjectAPITest extends TestCase
 
         $this->actingAs($user);
 
-        $projects = Project::factory()->count(5)->create();
+        $projects = [];
+        for ($i = 0; $i < 5; $i++) {
+            $projects[] = Project::factory()->withExpectedCode()->for(Client::factory())->create();
+        }
 
         $response = $this->json('GET', '/api/v1/projects');
 
@@ -78,29 +81,52 @@ class ProjectAPITest extends TestCase
 
         $this->actingAs($user);
 
-        Driver::factory()->count(5)->create();
+        for ($i = 0; $i < 5; $i++) {
+            Driver::factory()
+                ->withExpectedCode()
+                ->create();
+        }
 
-        Truck::factory()
-            ->for(Vendor::factory())
-            ->count(5)->create();
+        for ($i = 0; $i < 5; $i++) {
+            Truck::factory()
+                ->withExpectedCode()
+                ->for(Vendor::factory())
+                ->create();
+        }
 
-        HeavyVehicle::factory()
-            ->for(Vendor::factory())
-            ->count(5)->create();
+        for ($i = 0; $i < 5; $i++) {
+            HeavyVehicle::factory()
+                ->withExpectedCode()
+                ->for(Vendor::factory())
+                ->create();
+        }
 
-        Station::factory()->count(5)->create();
+        for ($i = 0; $i < 5; $i++) {
+            Station::factory()
+                ->withExpectedCode()
+                ->create();
+        }
 
-        Checker::factory()
-            ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::CHECKER)->first()))
-            ->count(5)->create();
+        for ($i = 0; $i < 5; $i++) {
+            Checker::factory()
+                ->withExpectedCode()
+                ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::CHECKER)->first()))
+                ->create();
+        }
 
-        TechnicalAdmin::factory()
-            ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::TECHNICAL_ADMIN)->first()))
-            ->count(5)->create();
+        for ($i = 0; $i < 5; $i++) {
+            TechnicalAdmin::factory()
+                ->withExpectedCode()
+                ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::TECHNICAL_ADMIN)->first()))
+                ->create();
+        }
 
-        GasOperator::factory()
-            ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::GAS_OPERATOR)->first()))
-            ->count(5)->create();
+        for ($i = 0; $i < 5; $i++) {
+            GasOperator::factory()
+                ->withExpectedCode()
+                ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::GAS_OPERATOR)->first()))
+                ->create();
+        }
 
         $project = Project::factory()
             ->for(Client::factory())
@@ -134,7 +160,7 @@ class ProjectAPITest extends TestCase
 
         $project = Project::factory()->create();
 
-        $response = $this->json('GET', '/api/v1/project/'.$project->id);
+        $response = $this->json('GET', '/api/v1/project/' . $project->id);
 
         $response->assertSuccessful();
 
@@ -172,7 +198,7 @@ class ProjectAPITest extends TestCase
             ->for(Client::factory())
             ->make(['code' => 'AUTO'])->toArray();
 
-        $response = $this->json('POST', '/api/v1/project/'.$project->id, $updatedProject);
+        $response = $this->json('POST', '/api/v1/project/' . $project->id, $updatedProject);
 
         $response->assertSuccessful();
 
@@ -189,29 +215,52 @@ class ProjectAPITest extends TestCase
 
         $this->actingAs($user);
 
-        Driver::factory()->count(5)->create();
+        for ($i = 0; $i < 5; $i++) {
+            Driver::factory()
+                ->withExpectedCode()
+                ->create();
+        }
 
-        Truck::factory()
-            ->for(Vendor::factory())
-            ->count(5)->create();
+        for ($i = 0; $i < 5; $i++) {
+            Truck::factory()
+                ->withExpectedCode()
+                ->for(Vendor::factory())
+                ->create();
+        }
 
-        HeavyVehicle::factory()
-            ->for(Vendor::factory())
-            ->count(5)->create();
+        for ($i = 0; $i < 5; $i++) {
+            HeavyVehicle::factory()
+                ->withExpectedCode()
+                ->for(Vendor::factory())
+                ->create();
+        }
 
-        Station::factory()->count(5)->create();
+        for ($i = 0; $i < 5; $i++) {
+            Station::factory()
+                ->withExpectedCode()
+                ->create();
+        }
 
-        Checker::factory()
-            ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::CHECKER)->first()))
-            ->count(5)->create();
+        for ($i = 0; $i < 5; $i++) {
+            Checker::factory()
+                ->withExpectedCode()
+                ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::CHECKER)->first()))
+                ->create();
+        }
 
-        TechnicalAdmin::factory()
-            ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::TECHNICAL_ADMIN)->first()))
-            ->count(5)->create();
+        for ($i = 0; $i < 5; $i++) {
+            TechnicalAdmin::factory()
+                ->withExpectedCode()
+                ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::TECHNICAL_ADMIN)->first()))
+                ->create();
+        }
 
-        GasOperator::factory()
-            ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::GAS_OPERATOR)->first()))
-            ->count(5)->create();
+        for ($i = 0; $i < 5; $i++) {
+            GasOperator::factory()
+                ->withExpectedCode()
+                ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::GAS_OPERATOR)->first()))
+                ->create();
+        }
 
         $project = Project::factory()
             ->for(Client::factory())
@@ -229,7 +278,7 @@ class ProjectAPITest extends TestCase
         $updatedProject['technical_admins'] = TechnicalAdmin::inRandomOrder()->limit(mt_rand(1, 5))->get()->pluck('id')->toArray();
         $updatedProject['gas_operators'] = GasOperator::inRandomOrder()->limit(mt_rand(1, 5))->get()->pluck('id')->toArray();
 
-        $response = $this->json('POST', '/api/v1/project/'.$project->id, $updatedProject);
+        $response = $this->json('POST', '/api/v1/project/' . $project->id, $updatedProject);
 
         $response->assertSuccessful();
 
@@ -255,7 +304,7 @@ class ProjectAPITest extends TestCase
             ->for(Client::factory())
             ->make(['code' => $project->code])->toArray();
 
-        $response = $this->json('POST', '/api/v1/project/'.$project->id, $updatedProject);
+        $response = $this->json('POST', '/api/v1/project/' . $project->id, $updatedProject);
 
         $response->assertSuccessful();
 
@@ -282,7 +331,7 @@ class ProjectAPITest extends TestCase
             ->for(Client::factory())
             ->make(['code' => $existingProject->code])->toArray();
 
-        $response = $this->json('POST', '/api/v1/project/'.$newProject->id, $updatedProject);
+        $response = $this->json('POST', '/api/v1/project/' . $newProject->id, $updatedProject);
 
         $response->assertStatus(422);
     }
@@ -299,7 +348,7 @@ class ProjectAPITest extends TestCase
             ->for(Client::factory())
             ->create();
 
-        $response = $this->json('DELETE', '/api/v1/project/'.$project->id);
+        $response = $this->json('DELETE', '/api/v1/project/' . $project->id);
 
         $response->assertSuccessful();
 

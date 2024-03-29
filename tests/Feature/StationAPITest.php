@@ -28,7 +28,9 @@ class StationAPITest extends TestCase
 
         $this->actingAs($user);
 
-        Station::factory()->count(5)->create();
+        for ($i = 0; $i < 5; $i++) {
+            Station::factory()->withExpectedCode()->create();
+        }
 
         $response = $this->json('GET', '/api/v1/stations');
 
