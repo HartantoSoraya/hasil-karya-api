@@ -77,7 +77,7 @@ class CheckerAPITest extends TestCase
             ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::CHECKER)->first()))
             ->create();
 
-        $response = $this->json('GET', '/api/v1/checker/' . $checker->id);
+        $response = $this->json('GET', '/api/v1/checker/'.$checker->id);
 
         $response->assertSuccessful();
     }
@@ -99,7 +99,7 @@ class CheckerAPITest extends TestCase
             ->make(['code' => 'AUTO'])
             ->toArray();
 
-        $response = $this->json('POST', '/api/v1/checker/' . $checker->id, $updatedChecker);
+        $response = $this->json('POST', '/api/v1/checker/'.$checker->id, $updatedChecker);
 
         $response->assertSuccessful();
 
@@ -125,7 +125,7 @@ class CheckerAPITest extends TestCase
             ->make(['code' => $checker->code])
             ->toArray();
 
-        $response = $this->json('POST', '/api/v1/checker/' . $checker->id, $updatedChecker);
+        $response = $this->json('POST', '/api/v1/checker/'.$checker->id, $updatedChecker);
 
         $response->assertSuccessful();
 
@@ -153,7 +153,7 @@ class CheckerAPITest extends TestCase
             ->make(['code' => $existingChecker->code])
             ->toArray();
 
-        $response = $this->json('POST', '/api/v1/checker/' . $newChecker->id, $updatedChecker);
+        $response = $this->json('POST', '/api/v1/checker/'.$newChecker->id, $updatedChecker);
 
         $response->assertStatus(422);
     }
@@ -170,13 +170,13 @@ class CheckerAPITest extends TestCase
             ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::CHECKER)->first()))
             ->create(['is_active' => true]);
 
-        $response = $this->json('POST', '/api/v1/checker/active/' . $checker->id, ['is_active' => false]);
+        $response = $this->json('POST', '/api/v1/checker/active/'.$checker->id, ['is_active' => false]);
 
         $response->assertSuccessful();
 
         $this->assertDatabaseHas('checkers', ['id' => $checker->id, 'is_active' => false]);
 
-        $response = $this->json('POST', '/api/v1/checker/active/' . $checker->id, ['is_active' => true]);
+        $response = $this->json('POST', '/api/v1/checker/active/'.$checker->id, ['is_active' => true]);
 
         $response->assertSuccessful();
 
@@ -195,7 +195,7 @@ class CheckerAPITest extends TestCase
             ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::CHECKER)->first()))
             ->create();
 
-        $response = $this->json('DELETE', '/api/v1/checker/' . $checker->id);
+        $response = $this->json('DELETE', '/api/v1/checker/'.$checker->id);
 
         $response->assertSuccessful();
 

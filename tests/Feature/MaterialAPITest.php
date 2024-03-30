@@ -27,7 +27,7 @@ class MaterialAPITest extends TestCase
 
         $this->actingAs($user);
 
-        $materials =  [];
+        $materials = [];
         for ($i = 0; $i < 5; $i++) {
             $materials[] = Material::factory()->withExpectedCode()->create();
         }
@@ -74,7 +74,7 @@ class MaterialAPITest extends TestCase
         $material = Material::factory()
             ->create();
 
-        $response = $this->json('GET', '/api/v1/material/' . $material->id);
+        $response = $this->json('GET', '/api/v1/material/'.$material->id);
 
         $response->assertSuccessful();
     }
@@ -93,7 +93,7 @@ class MaterialAPITest extends TestCase
         $updatedMaterial = Material::factory()
             ->make(['code' => 'AUTO'])->toArray();
 
-        $response = $this->json('POST', '/api/v1/material/' . $material->id, $updatedMaterial);
+        $response = $this->json('POST', '/api/v1/material/'.$material->id, $updatedMaterial);
 
         $response->assertSuccessful();
 
@@ -118,7 +118,7 @@ class MaterialAPITest extends TestCase
         $updatedMaterial = Material::factory()
             ->make(['code' => $material->code])->toArray();
 
-        $response = $this->json('POST', '/api/v1/material/' . $material->id, $updatedMaterial);
+        $response = $this->json('POST', '/api/v1/material/'.$material->id, $updatedMaterial);
 
         $response->assertSuccessful();
 
@@ -143,7 +143,7 @@ class MaterialAPITest extends TestCase
 
         $updatedMaterial = Material::factory()->make(['code' => $existingMaterial->code])->toArray();
 
-        $response = $this->json('POST', '/api/v1/material/' . $newMaterial->id, $updatedMaterial);
+        $response = $this->json('POST', '/api/v1/material/'.$newMaterial->id, $updatedMaterial);
 
         $response->assertStatus(422);
     }
@@ -159,7 +159,7 @@ class MaterialAPITest extends TestCase
         $material = Material::factory()
             ->create();
 
-        $response = $this->json('DELETE', '/api/v1/material/' . $material->id);
+        $response = $this->json('DELETE', '/api/v1/material/'.$material->id);
 
         $response->assertSuccessful();
 

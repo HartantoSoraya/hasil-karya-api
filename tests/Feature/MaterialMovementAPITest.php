@@ -228,7 +228,7 @@ class MaterialMovementAPITest extends TestCase
             ->for($checker, 'checker')
             ->create();
 
-        $response = $this->json('GET', '/api/v1/material-movement/' . $materialMovement->id);
+        $response = $this->json('GET', '/api/v1/material-movement/'.$materialMovement->id);
 
         $response->assertSuccessful();
     }
@@ -395,7 +395,7 @@ class MaterialMovementAPITest extends TestCase
             ->make(['code' => 'AUTO'])
             ->toArray();
 
-        $response = $this->json('POST', '/api/v1/material-movement/' . $materialMovement->id, $updatedMaterialMovement);
+        $response = $this->json('POST', '/api/v1/material-movement/'.$materialMovement->id, $updatedMaterialMovement);
 
         $response->assertSuccessful();
 
@@ -433,7 +433,7 @@ class MaterialMovementAPITest extends TestCase
             ->make(['code' => $materialMovement->code])
             ->toArray();
 
-        $response = $this->json('POST', '/api/v1/technical-admin/material-movement/update/' . $materialMovement->id, $updatedMaterialMovement);
+        $response = $this->json('POST', '/api/v1/technical-admin/material-movement/update/'.$materialMovement->id, $updatedMaterialMovement);
 
         $response->assertSuccessful();
 
@@ -470,7 +470,7 @@ class MaterialMovementAPITest extends TestCase
             ->make(['code' => $materialMovement->code])
             ->toArray();
 
-        $response = $this->json('POST', '/api/v1/material-movement/' . $materialMovement->id, $updatedMaterialMovement);
+        $response = $this->json('POST', '/api/v1/material-movement/'.$materialMovement->id, $updatedMaterialMovement);
 
         $response->assertSuccessful();
 
@@ -515,7 +515,7 @@ class MaterialMovementAPITest extends TestCase
             ->make(['code' => $existingMaterialMovement->code])
             ->toArray();
 
-        $response = $this->json('POST', '/api/v1/material-movement/' . $newMaterialMovement->id, $updatedMaterialMovement);
+        $response = $this->json('POST', '/api/v1/material-movement/'.$newMaterialMovement->id, $updatedMaterialMovement);
 
         $response->assertStatus(422);
     }
@@ -539,7 +539,7 @@ class MaterialMovementAPITest extends TestCase
             ->for($checker, 'checker')
             ->create();
 
-        $response = $this->json('DELETE', '/api/v1/material-movement/' . $materialMovement->id);
+        $response = $this->json('DELETE', '/api/v1/material-movement/'.$materialMovement->id);
 
         $response->assertSuccessful();
 

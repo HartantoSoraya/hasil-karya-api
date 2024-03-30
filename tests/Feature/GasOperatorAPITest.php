@@ -77,7 +77,7 @@ class GasOperatorAPITest extends TestCase
             ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::GAS_OPERATOR)->first()))
             ->create();
 
-        $response = $this->json('GET', '/api/v1/gas-operator/' . $gasOperator->id);
+        $response = $this->json('GET', '/api/v1/gas-operator/'.$gasOperator->id);
 
         $response->assertSuccessful();
     }
@@ -99,7 +99,7 @@ class GasOperatorAPITest extends TestCase
             ->make(['code' => 'AUTO'])
             ->toArray();
 
-        $response = $this->json('POST', '/api/v1/gas-operator/' . $gasOperator->id, $updatedGasOperator);
+        $response = $this->json('POST', '/api/v1/gas-operator/'.$gasOperator->id, $updatedGasOperator);
 
         $response->assertSuccessful();
 
@@ -125,7 +125,7 @@ class GasOperatorAPITest extends TestCase
             ->make(['code' => $gasOperator->code])
             ->toArray();
 
-        $response = $this->json('POST', '/api/v1/gas-operator/' . $gasOperator->id, $updatedGasOperator);
+        $response = $this->json('POST', '/api/v1/gas-operator/'.$gasOperator->id, $updatedGasOperator);
 
         $response->assertSuccessful();
 
@@ -153,7 +153,7 @@ class GasOperatorAPITest extends TestCase
             ->make(['code' => $existingGasOperator->code])
             ->toArray();
 
-        $response = $this->json('POST', '/api/v1/gas-operator/' . $newGasOperator->id, $updatedGasOperator);
+        $response = $this->json('POST', '/api/v1/gas-operator/'.$newGasOperator->id, $updatedGasOperator);
 
         $response->assertStatus(422);
     }
@@ -170,13 +170,13 @@ class GasOperatorAPITest extends TestCase
             ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::GAS_OPERATOR)->first()))
             ->create(['is_active' => true]);
 
-        $response = $this->json('POST', '/api/v1/gas-operator/active/' . $gasOperator->id, ['is_active' => false]);
+        $response = $this->json('POST', '/api/v1/gas-operator/active/'.$gasOperator->id, ['is_active' => false]);
 
         $response->assertSuccessful();
 
         $this->assertDatabaseHas('gas_operators', ['id' => $gasOperator->id, 'is_active' => false]);
 
-        $response = $this->json('POST', '/api/v1/gas-operator/active/' . $gasOperator->id, ['is_active' => true]);
+        $response = $this->json('POST', '/api/v1/gas-operator/active/'.$gasOperator->id, ['is_active' => true]);
 
         $response->assertSuccessful();
 
@@ -195,7 +195,7 @@ class GasOperatorAPITest extends TestCase
             ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::GAS_OPERATOR)->first()))
             ->create();
 
-        $response = $this->json('DELETE', '/api/v1/gas-operator/' . $gasOperator->id);
+        $response = $this->json('DELETE', '/api/v1/gas-operator/'.$gasOperator->id);
 
         $response->assertSuccessful();
 
