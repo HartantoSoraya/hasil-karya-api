@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use Illuminate\Support\Str;
 use App\Repositories\TruckRepository;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class TruckFactory extends Factory
 {
@@ -35,7 +35,7 @@ class TruckFactory extends Factory
             do {
                 $code = $truckRepository->generateCode($tryCount);
                 $tryCount++;
-            } while (!$truckRepository->isUniqueCode($code));
+            } while (! $truckRepository->isUniqueCode($code));
 
             return [
                 'code' => $code,

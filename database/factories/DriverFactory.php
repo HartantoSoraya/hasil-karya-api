@@ -2,10 +2,9 @@
 
 namespace Database\Factories;
 
-use Illuminate\Support\Str;
-use App\Http\Resources\DriverResource;
 use App\Repositories\DriverRepository;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class DriverFactory extends Factory
 {

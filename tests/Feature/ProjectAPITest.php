@@ -160,7 +160,7 @@ class ProjectAPITest extends TestCase
 
         $project = Project::factory()->create();
 
-        $response = $this->json('GET', '/api/v1/project/' . $project->id);
+        $response = $this->json('GET', '/api/v1/project/'.$project->id);
 
         $response->assertSuccessful();
 
@@ -198,7 +198,7 @@ class ProjectAPITest extends TestCase
             ->for(Client::factory())
             ->make(['code' => 'AUTO'])->toArray();
 
-        $response = $this->json('POST', '/api/v1/project/' . $project->id, $updatedProject);
+        $response = $this->json('POST', '/api/v1/project/'.$project->id, $updatedProject);
 
         $response->assertSuccessful();
 
@@ -278,7 +278,7 @@ class ProjectAPITest extends TestCase
         $updatedProject['technical_admins'] = TechnicalAdmin::inRandomOrder()->limit(mt_rand(1, 5))->get()->pluck('id')->toArray();
         $updatedProject['gas_operators'] = GasOperator::inRandomOrder()->limit(mt_rand(1, 5))->get()->pluck('id')->toArray();
 
-        $response = $this->json('POST', '/api/v1/project/' . $project->id, $updatedProject);
+        $response = $this->json('POST', '/api/v1/project/'.$project->id, $updatedProject);
 
         $response->assertSuccessful();
 
@@ -304,7 +304,7 @@ class ProjectAPITest extends TestCase
             ->for(Client::factory())
             ->make(['code' => $project->code])->toArray();
 
-        $response = $this->json('POST', '/api/v1/project/' . $project->id, $updatedProject);
+        $response = $this->json('POST', '/api/v1/project/'.$project->id, $updatedProject);
 
         $response->assertSuccessful();
 
@@ -331,7 +331,7 @@ class ProjectAPITest extends TestCase
             ->for(Client::factory())
             ->make(['code' => $existingProject->code])->toArray();
 
-        $response = $this->json('POST', '/api/v1/project/' . $newProject->id, $updatedProject);
+        $response = $this->json('POST', '/api/v1/project/'.$newProject->id, $updatedProject);
 
         $response->assertStatus(422);
     }
@@ -348,7 +348,7 @@ class ProjectAPITest extends TestCase
             ->for(Client::factory())
             ->create();
 
-        $response = $this->json('DELETE', '/api/v1/project/' . $project->id);
+        $response = $this->json('DELETE', '/api/v1/project/'.$project->id);
 
         $response->assertSuccessful();
 

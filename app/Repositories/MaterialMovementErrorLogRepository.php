@@ -2,10 +2,10 @@
 
 namespace App\Repositories;
 
+use App\Interfaces\MaterialMovementErrorLogRepositoryInterface;
+use App\Models\MaterialMovementErrorLog;
 use App\Models\User;
 use Spatie\Activitylog\Models\Activity;
-use App\Models\MaterialMovementErrorLog;
-use App\Interfaces\MaterialMovementErrorLogRepositoryInterface;
 
 class MaterialMovementErrorLogRepository implements MaterialMovementErrorLogRepositoryInterface
 {
@@ -15,9 +15,9 @@ class MaterialMovementErrorLogRepository implements MaterialMovementErrorLogRepo
 
         foreach ($materialMovementErrorLogs as $idx => $materialMovementErrorLog) {
             $created_by = Activity::where('subject_id', $materialMovementErrorLog->id)
-                ->where('subject_type', MaterialMovementErrorLog::class)->first()->causer_id;            
-            $causer = User::find($created_by); 
-            
+                ->where('subject_type', MaterialMovementErrorLog::class)->first()->causer_id;
+            $causer = User::find($created_by);
+
             if ($causer->hasChecker()) {
                 $materialMovementErrorLogs[$idx]['creator_type'] = 'Pemeriksa Perpindahan Material';
                 $materialMovementErrorLogs[$idx]['created_by'] = $causer->checker->name;
@@ -30,7 +30,7 @@ class MaterialMovementErrorLogRepository implements MaterialMovementErrorLogRepo
             } else {
                 $materialMovementErrorLogs[$idx]['creator_type'] = 'Pengguna Lain';
                 $materialMovementErrorLogs[$idx]['created_by'] = $causer->email;
-            }            
+            }
         }
 
         return $materialMovementErrorLogs;

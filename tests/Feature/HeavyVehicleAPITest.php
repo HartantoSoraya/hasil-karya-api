@@ -71,7 +71,7 @@ class HeavyVehicleAPITest extends TestCase
             ->for(Vendor::factory())
             ->create();
 
-        $response = $this->json('GET', '/api/v1/heavy-vehicle/' . $heavyVehicle->id);
+        $response = $this->json('GET', '/api/v1/heavy-vehicle/'.$heavyVehicle->id);
 
         $response->assertSuccessful();
     }
@@ -93,7 +93,7 @@ class HeavyVehicleAPITest extends TestCase
             ->make(['code' => 'AUTO'])
             ->toArray();
 
-        $response = $this->json('POST', '/api/v1/heavy-vehicle/' . $heavyVehicle->id, $updatedHeavyVehicle);
+        $response = $this->json('POST', '/api/v1/heavy-vehicle/'.$heavyVehicle->id, $updatedHeavyVehicle);
 
         $response->assertSuccessful();
 
@@ -119,7 +119,7 @@ class HeavyVehicleAPITest extends TestCase
             ->make(['code' => $heavyVehicle->code])
             ->toArray();
 
-        $response = $this->json('POST', '/api/v1/heavy-vehicle/' . $heavyVehicle->id, $updatedHeavyVehicle);
+        $response = $this->json('POST', '/api/v1/heavy-vehicle/'.$heavyVehicle->id, $updatedHeavyVehicle);
 
         $response->assertSuccessful();
 
@@ -147,7 +147,7 @@ class HeavyVehicleAPITest extends TestCase
             ->make(['code' => $existingHeavyVehicle->code])
             ->toArray();
 
-        $response = $this->json('POST', '/api/v1/heavy-vehicle/' . $newHeavyVehicle->id, $updatedHeavyVehicle);
+        $response = $this->json('POST', '/api/v1/heavy-vehicle/'.$newHeavyVehicle->id, $updatedHeavyVehicle);
 
         $response->assertStatus(422);
     }
@@ -164,13 +164,13 @@ class HeavyVehicleAPITest extends TestCase
             ->for(Vendor::factory())
             ->create(['is_active' => true]);
 
-        $response = $this->json('POST', '/api/v1/heavy-vehicle/active/' . $heavyVehicle->id, ['is_active' => false]);
+        $response = $this->json('POST', '/api/v1/heavy-vehicle/active/'.$heavyVehicle->id, ['is_active' => false]);
 
         $response->assertSuccessful();
 
         $this->assertDatabaseHas('heavy_vehicles', ['id' => $heavyVehicle->id, 'is_active' => false]);
 
-        $response = $this->json('POST', '/api/v1/heavy-vehicle/active/' . $heavyVehicle->id, ['is_active' => true]);
+        $response = $this->json('POST', '/api/v1/heavy-vehicle/active/'.$heavyVehicle->id, ['is_active' => true]);
 
         $response->assertSuccessful();
 
@@ -189,7 +189,7 @@ class HeavyVehicleAPITest extends TestCase
             ->for(Vendor::factory())
             ->create();
 
-        $response = $this->json('DELETE', '/api/v1/heavy-vehicle/' . $heavyVehicle->id);
+        $response = $this->json('DELETE', '/api/v1/heavy-vehicle/'.$heavyVehicle->id);
 
         $response->assertSuccessful();
 
@@ -211,7 +211,7 @@ class HeavyVehicleAPITest extends TestCase
             ->for(Vendor::factory())
             ->create();
 
-        $response = $this->json('GET', '/api/v1/heavy-vehicle/check-availability/' . $heavyVehicle->id);
+        $response = $this->json('GET', '/api/v1/heavy-vehicle/check-availability/'.$heavyVehicle->id);
 
         $response->assertSuccessful();
     }

@@ -34,6 +34,8 @@ class DatabaseSeeder extends Seeder
 
             MaterialMovementSeeder::class,
 
+            ProjectSeeder::class,
+
             NotificationRecepientSeeder::class,
         ]);
     }

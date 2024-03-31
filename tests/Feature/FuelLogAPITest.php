@@ -268,7 +268,7 @@ class FuelLogAPITest extends TestCase
             ->makeforTruck()
             ->create(['hourmeter' => 0]);
 
-        $response = $this->getJson('/api/v1/fuel-log/' . $fuelLog->id);
+        $response = $this->getJson('/api/v1/fuel-log/'.$fuelLog->id);
 
         $response->assertSuccessful();
 
@@ -276,7 +276,7 @@ class FuelLogAPITest extends TestCase
             ->makeForHeavyVehicle()
             ->create(['odometer' => 0]);
 
-        $response = $this->getJson('/api/v1/fuel-log/' . $fuelLog->id);
+        $response = $this->getJson('/api/v1/fuel-log/'.$fuelLog->id);
 
         $response->assertSuccessful();
     }
@@ -311,7 +311,7 @@ class FuelLogAPITest extends TestCase
             ->make(['code' => 'AUTO'])
             ->toArray(['hourmeter' => 0]);
 
-        $response = $this->json('POST', '/api/v1/fuel-log/truck/' . $fuelLog->id, $updatedFuelLog);
+        $response = $this->json('POST', '/api/v1/fuel-log/truck/'.$fuelLog->id, $updatedFuelLog);
 
         $response->assertSuccessful();
 
@@ -328,7 +328,7 @@ class FuelLogAPITest extends TestCase
             ->make(['code' => 'AUTO'])
             ->toArray(['odometer' => 0]);
 
-        $response = $this->json('POST', '/api/v1/fuel-log/heavy-vehicle/' . $fuelLog->id, $updatedFuelLog);
+        $response = $this->json('POST', '/api/v1/fuel-log/heavy-vehicle/'.$fuelLog->id, $updatedFuelLog);
 
         $response->assertSuccessful();
 
@@ -354,7 +354,7 @@ class FuelLogAPITest extends TestCase
             ->make(['code' => $fuelLog->code])
             ->toArray(['hourmeter' => 0]);
 
-        $response = $this->json('POST', '/api/v1/fuel-log/truck/' . $fuelLog->id, $updatedFuelLog);
+        $response = $this->json('POST', '/api/v1/fuel-log/truck/'.$fuelLog->id, $updatedFuelLog);
 
         $response->assertSuccessful();
 
@@ -369,7 +369,7 @@ class FuelLogAPITest extends TestCase
             ->make(['code' => $fuelLog->code])
             ->toArray(['odometer' => 0]);
 
-        $response = $this->json('POST', '/api/v1/fuel-log/heavy-vehicle/' . $fuelLog->id, $updatedFuelLog);
+        $response = $this->json('POST', '/api/v1/fuel-log/heavy-vehicle/'.$fuelLog->id, $updatedFuelLog);
 
         $response->assertSuccessful();
 
@@ -397,7 +397,7 @@ class FuelLogAPITest extends TestCase
             ->make(['code' => $existingFuelLog->code])
             ->toArray(['hourmeter' => 0]);
 
-        $response = $this->json('POST', '/api/v1/fuel-log/truck/' . $newFuelLog->id, $updatedFuelLog);
+        $response = $this->json('POST', '/api/v1/fuel-log/truck/'.$newFuelLog->id, $updatedFuelLog);
 
         $response->assertStatus(422);
 
@@ -414,7 +414,7 @@ class FuelLogAPITest extends TestCase
             ->make(['code' => $existingFuelLog->code])
             ->toArray(['odometer' => 0]);
 
-        $response = $this->json('POST', '/api/v1/fuel-log/heavy-vehicle/' . $newFuelLog->id, $updatedFuelLog);
+        $response = $this->json('POST', '/api/v1/fuel-log/heavy-vehicle/'.$newFuelLog->id, $updatedFuelLog);
 
         $response->assertStatus(422);
     }
@@ -431,7 +431,7 @@ class FuelLogAPITest extends TestCase
             ->makeForTruck()
             ->create(['hourmeter' => 0]);
 
-        $response = $this->json('DELETE', '/api/v1/fuel-log/' . $fuelLog->id);
+        $response = $this->json('DELETE', '/api/v1/fuel-log/'.$fuelLog->id);
 
         $response->assertSuccessful();
 
@@ -443,7 +443,7 @@ class FuelLogAPITest extends TestCase
             ->makeForHeavyVehicle()
             ->create(['odometer' => 0]);
 
-        $response = $this->json('DELETE', '/api/v1/fuel-log/' . $fuelLog->id);
+        $response = $this->json('DELETE', '/api/v1/fuel-log/'.$fuelLog->id);
 
         $response->assertSuccessful();
 

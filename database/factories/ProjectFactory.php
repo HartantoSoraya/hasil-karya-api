@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
-use Illuminate\Support\Str;
 use App\Enum\ProjectStatusEnum;
 use App\Repositories\ProjectRepository;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 class ProjectFactory extends Factory
 {
@@ -16,7 +16,8 @@ class ProjectFactory extends Factory
      */
     public function definition(): array
     {
-        $start_date = $this->faker->date();
+        // $start_date = $this->faker->date();
+        $start_date = $this->faker->dateTimeBetween('today', '+30 days')->format('Y-m-d');
         $end_date = $this->faker->dateTimeBetween($start_date, '+1 year')->format('Y-m-d');
 
         return [

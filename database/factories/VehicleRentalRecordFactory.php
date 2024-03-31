@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
-use Illuminate\Support\Str;
-use Illuminate\Http\UploadedFile;
 use App\Repositories\VehicleRentalRecordRepository;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 
 class VehicleRentalRecordFactory extends Factory
 {
