@@ -28,6 +28,8 @@ class FuelLogErrorLogResource extends JsonResource
             'remarks' => $this->remarks,
             'error_log' => $this->error_log,
             'created_at' => $this->created_at,
+            'creator_type' => $this->creator_type,
+            'created_by' => $this->created_by,
         ];
     }
 }

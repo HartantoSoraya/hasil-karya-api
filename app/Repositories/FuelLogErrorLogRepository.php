@@ -4,12 +4,40 @@ namespace App\Repositories;
 
 use App\Interfaces\FuelLogErrorLogRepositoryInterface;
 use App\Models\FuelLogErrorLog;
+use App\Models\User;
+use Spatie\Activitylog\Models\Activity;
 
 class FuelLogErrorLogRepository implements FuelLogErrorLogRepositoryInterface
 {
     public function getAllFuelLogErrorLogs()
     {
         $fuelLogErrorLogs = FuelLogErrorLog::orderBy('created_at', 'desc')->get();
+
+        foreach ($fuelLogErrorLogs as $idx => $fuelLogErrorLog) {
+            $activityLog = Activity::where('subject_id', $fuelLogErrorLog->id)
+                ->where('subject_type', FuelLogErrorLog::class)->first();
+
+            if ($activityLog) {
+                $causer = User::find($activityLog->causer_id);
+
+                if ($causer->hasChecker()) {
+                    $fuelLogErrorLogs[$idx]['creator_type'] = 'Pemeriksa Perpindahan Material';
+                    $fuelLogErrorLogs[$idx]['created_by'] = $causer->checker->name;
+                } elseif ($causer->hasgasOperator()) {
+                    $fuelLogErrorLogs[$idx]['creator_type'] = 'Solar Man';
+                    $fuelLogErrorLogs[$idx]['created_by'] = $causer->gasOperator->name;
+                } elseif ($causer->hasTechnicalAdmin()) {
+                    $fuelLogErrorLogs[$idx]['creator_type'] = 'Admin Teknik';
+                    $fuelLogErrorLogs[$idx]['created_by'] = $causer->technicalAdmin->name;
+                } else {
+                    $fuelLogErrorLogs[$idx]['creator_type'] = 'Pengguna Lain';
+                    $fuelLogErrorLogs[$idx]['created_by'] = $causer->email;
+                }
+            } else {
+                $fuelLogErrorLogs[$idx]['creator_type'] = '';
+                $fuelLogErrorLogs[$idx]['created_by'] = '';
+            }
+        }
 
         return $fuelLogErrorLogs;
     }

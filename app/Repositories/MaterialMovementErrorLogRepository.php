@@ -14,22 +14,28 @@ class MaterialMovementErrorLogRepository implements MaterialMovementErrorLogRepo
         $materialMovementErrorLogs = MaterialMovementErrorLog::orderBy('created_at', 'desc')->get();
 
         foreach ($materialMovementErrorLogs as $idx => $materialMovementErrorLog) {
-            $created_by = Activity::where('subject_id', $materialMovementErrorLog->id)
-                ->where('subject_type', MaterialMovementErrorLog::class)->first()->causer_id;
-            $causer = User::find($created_by);
+            $activityLog = Activity::where('subject_id', $materialMovementErrorLog->id)
+                ->where('subject_type', MaterialMovementErrorLog::class)->first();
 
-            if ($causer->hasChecker()) {
-                $materialMovementErrorLogs[$idx]['creator_type'] = 'Pemeriksa Perpindahan Material';
-                $materialMovementErrorLogs[$idx]['created_by'] = $causer->checker->name;
-            } elseif ($causer->hasgasOperator()) {
-                $materialMovementErrorLogs[$idx]['creator_type'] = 'Solar Man';
-                $materialMovementErrorLogs[$idx]['created_by'] = $causer->gasOperator->name;
-            } elseif ($causer->hasTechnicalAdmin()) {
-                $materialMovementErrorLogs[$idx]['creator_type'] = 'Admin Teknik';
-                $materialMovementErrorLogs[$idx]['created_by'] = $causer->technicalAdmin->name;
+            if ($activityLog) {
+                $causer = User::find($activityLog->causer_id);
+
+                if ($causer->hasChecker()) {
+                    $materialMovementErrorLogs[$idx]['creator_type'] = 'Pemeriksa Perpindahan Material';
+                    $materialMovementErrorLogs[$idx]['created_by'] = $causer->checker->name;
+                } elseif ($causer->hasgasOperator()) {
+                    $materialMovementErrorLogs[$idx]['creator_type'] = 'Solar Man';
+                    $materialMovementErrorLogs[$idx]['created_by'] = $causer->gasOperator->name;
+                } elseif ($causer->hasTechnicalAdmin()) {
+                    $materialMovementErrorLogs[$idx]['creator_type'] = 'Admin Teknik';
+                    $materialMovementErrorLogs[$idx]['created_by'] = $causer->technicalAdmin->name;
+                } else {
+                    $materialMovementErrorLogs[$idx]['creator_type'] = 'Pengguna Lain';
+                    $materialMovementErrorLogs[$idx]['created_by'] = $causer->email;
+                }
             } else {
-                $materialMovementErrorLogs[$idx]['creator_type'] = 'Pengguna Lain';
-                $materialMovementErrorLogs[$idx]['created_by'] = $causer->email;
+                $materialMovementErrorLogs[$idx]['creator_type'] = '';
+                $materialMovementErrorLogs[$idx]['created_by'] = '';
             }
         }
 
