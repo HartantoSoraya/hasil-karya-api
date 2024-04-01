@@ -9,7 +9,7 @@ class ActivityLogRepository implements ActivityLogRepositoryInterface
 {
     public function getAllActivityLogs()
     {
-        $activityLogs = Activity::all();
+        $activityLogs = Activity::orderBy('created_at', 'desc')->get();
 
         return $activityLogs;
     }

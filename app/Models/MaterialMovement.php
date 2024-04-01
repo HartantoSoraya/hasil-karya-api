@@ -22,19 +22,28 @@ class MaterialMovement extends Model
         'checker_id',
         'date',
         'truck_capacity',
-        'observation_ratio_percentage',
-        'observation_ratio_number',
+        'observation_ratio',
         'solid_ratio',
         'solid_volume_estimate',
-        'ratio_measurement_ritage',
         'remarks',
     ];
 
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['code', 'driver_id', 'truck_id', 'station_id', 'checker_id', 'date', 'truck_capacity', 'observation_ratio_percentage', 'observation_ratio_number', 'solid_ratio', 'solid_volume_estimate', 'remarks'])
-            ->setDescriptionForEvent(fn (string $eventName) => "This model has been {$eventName}")
+            ->logOnly([
+                'code',
+                'driver_id',
+                'truck_id',
+                'station_id',
+                'checker_id',
+                'date',
+                'truck_capacity',
+                'observation_ratio',
+                'solid_ratio',
+                'solid_volume_estimate',
+                'remarks',
+            ])->setDescriptionForEvent(fn (string $eventName) => "This model has been {$eventName}")
             ->useLogName('MaterialMovement');
     }
 

@@ -24,11 +24,9 @@ class MaterialMovementResource extends JsonResource
             'date' => $this->date,
             'formatted_date' => $this->formatted_date,
             'truck_capacity' => $this->truck_capacity,
-            'observation_ratio_percentage' => $this->observation_ratio_percentage,
-            'observation_ratio_number' => $this->observation_ratio_number,
+            'observation_ratio' => $this->observation_ratio,
             'solid_ratio' => $this->solid_ratio,
             'solid_volume_estimate' => $this->solid_volume_estimate,
-            'ratio_measurement_ritage' => $this->ratio_measurement_ritage,
             'remarks' => $this->remarks,
         ];
     }

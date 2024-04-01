@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class FuelLogErrorLog extends Model
 {
-    use HasFactory, SoftDeletes, UUID;
+    use HasFactory,LogsActivity, SoftDeletes, UUID;
 
     protected $fillable = [
         'code',

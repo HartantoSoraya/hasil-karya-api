@@ -16,22 +16,18 @@ class MaterialMovementFactory extends Factory
     public function definition(): array
     {
         $truck_capacity = random_int(5, 20);
-        $observation_ratio_percentage = $this->faker->randomFloat(2, 0.3, 1);
-        $observation_ratio_number = $truck_capacity * $observation_ratio_percentage;
+        $observation_ratio = $truck_capacity * $this->faker->randomFloat(2, 0.3, 1);
         $solid_ratio = $this->faker->randomFloat(4, 0.0, 1);
-        $solid_volume_estimate = $observation_ratio_number * $solid_ratio;
-        $ratio_measurement_ritage = $solid_volume_estimate / $observation_ratio_number;
+        $solid_volume_estimate = $observation_ratio * $solid_ratio;
+        $ratio_measurement_ritage = $solid_volume_estimate / $observation_ratio;
 
         return [
             'code' => Str::random(10),
             'date' => $this->faker->dateTimeThisMonth()->format('Y-m-d H:i:s'),
             'truck_capacity' => random_int(5, 20),
-            'observation_ratio_percentage' => $observation_ratio_percentage,
-            'observation_ratio_number' => $observation_ratio_number,
+            'observation_ratio' => $observation_ratio,
             'solid_ratio' => $solid_ratio,
             'solid_volume_estimate' => $solid_volume_estimate,
-            'ratio_measurement_ritage' => $ratio_measurement_ritage,
-
             'remarks' => $this->faker->text(),
         ];
     }

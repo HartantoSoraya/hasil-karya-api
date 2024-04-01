@@ -22,7 +22,7 @@ class MaterialMovementErrorLogFactory extends Factory
             'checker_id' => strval($this->faker->uuid),
             'date' => strval($this->faker->dateTimeThisYear()->format('Y-m-d H:i:s')),
             'truck_capacity' => strval($this->faker->numberBetween(5, 30)),
-            'observation_ratio_percentage' => strval($this->faker->numberBetween(5, 30)),
+            'observation_ratio' => strval($this->faker->numberBetween(5, 30)),
             'solid_ratio' => strval($this->faker->randomFloat(2, 0.5, 1.2)),
             'remarks' => strval($this->faker->text),
             'error_log' => strval($this->faker->text),
