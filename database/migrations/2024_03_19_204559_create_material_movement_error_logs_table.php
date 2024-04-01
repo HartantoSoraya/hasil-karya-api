@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('checker_id')->nullable();
             $table->text('date')->nullable();
             $table->text('truck_capacity')->nullable();
-            $table->text('observation_ratio_percentage')->nullable();
+            $table->text('observation_ratio')->nullable();
             $table->text('solid_ratio')->nullable();
             $table->text('remarks')->nullable();
             $table->text('error_log')->nullable();

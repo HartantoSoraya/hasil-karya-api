@@ -88,7 +88,7 @@ class MaterialMovementAPITest extends TestCase
         $response->assertSuccessful();
 
         $materialMovement['code'] = $response['data']['code'];
-        unset($materialMovement['observation_ratio_number']);
+        unset($materialMovement['observation_ratio']);
         unset($materialMovement['solid_ratio']);
         unset($materialMovement['solid_volume_estimate']);
 
@@ -120,7 +120,7 @@ class MaterialMovementAPITest extends TestCase
         $response->assertSuccessful();
 
         $materialMovement['code'] = $response['data']['code'];
-        unset($materialMovement['observation_ratio_number']);
+        unset($materialMovement['observation_ratio']);
         unset($materialMovement['solid_ratio']);
         unset($materialMovement['solid_volume_estimate']);
 
@@ -152,7 +152,7 @@ class MaterialMovementAPITest extends TestCase
         $response->assertStatus(422);
     }
 
-    public function test_material_movement_api_call_create_with_auto_code_and_negative_observation_ratio_percentage_expect_failed()
+    public function test_material_movement_api_call_create_with_auto_code_and_negative_observation_ratio_expect_failed()
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoleEnum::ADMIN)->first())
@@ -169,8 +169,9 @@ class MaterialMovementAPITest extends TestCase
             ->for(Truck::factory()->for(Vendor::factory())->create(['is_active' => true]), 'truck')
             ->for(Station::factory()->create(['is_active' => true]), 'station')
             ->for($checker, 'checker')
-            ->make(['code' => 'AUTO', 'observation_ratio_percentage' => mt_rand(-1000, -2)])
-            ->toArray();
+            ->make(['code' => 'AUTO'])->toArray();
+
+        $materialMovement['observation_ratio'] = $materialMovement['observation_ratio'] * -1;
 
         $response = $this->json('POST', '/api/v1/material-movement', $materialMovement);
 
@@ -202,7 +203,7 @@ class MaterialMovementAPITest extends TestCase
         $response->assertSuccessful();
 
         $materialMovement['code'] = $response['data']['code'];
-        unset($materialMovement['observation_ratio_number']);
+        unset($materialMovement['observation_ratio']);
         unset($materialMovement['solid_ratio']);
         unset($materialMovement['solid_volume_estimate']);
 
@@ -400,7 +401,7 @@ class MaterialMovementAPITest extends TestCase
         $response->assertSuccessful();
 
         $updatedMaterialMovement['code'] = $response['data']['code'];
-        unset($updatedMaterialMovement['observation_ratio_number']);
+        unset($updatedMaterialMovement['observation_ratio']);
         unset($updatedMaterialMovement['solid_volume_estimate']);
 
         $this->assertDatabaseHas('material_movements', $updatedMaterialMovement);
@@ -437,7 +438,7 @@ class MaterialMovementAPITest extends TestCase
 
         $response->assertSuccessful();
 
-        unset($updatedMaterialMovement['observation_ratio_number']);
+        unset($updatedMaterialMovement['observation_ratio']);
         unset($updatedMaterialMovement['solid_volume_estimate']);
 
         $this->assertDatabaseHas('material_movements', $updatedMaterialMovement);
@@ -474,7 +475,7 @@ class MaterialMovementAPITest extends TestCase
 
         $response->assertSuccessful();
 
-        unset($updatedMaterialMovement['observation_ratio_number']);
+        unset($updatedMaterialMovement['observation_ratio']);
         unset($updatedMaterialMovement['solid_ratio']);
         unset($updatedMaterialMovement['solid_volume_estimate']);
 

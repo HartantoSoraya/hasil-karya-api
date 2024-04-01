@@ -21,7 +21,7 @@ class StoreMaterialMovementErrorLogRequest extends FormRequest
             'checker_id' => 'nullable|string',
             'date' => 'nullable|string',
             'truck_capacity' => 'nullable|string',
-            'observation_ratio_percentage' => 'nullable|string',
+            'observation_ratio' => 'nullable|string',
             'solid_ratio' => 'nullable|string',
             'remarks' => 'nullable|string',
             'error_log' => 'required|string',
@@ -72,9 +72,9 @@ class StoreMaterialMovementErrorLogRequest extends FormRequest
             ]);
         }
 
-        if (! $this->has('observation_ratio_percentage')) {
+        if (! $this->has('observation_ratio')) {
             $this->merge([
-                'observation_ratio_percentage' => null,
+                'observation_ratio' => null,
             ]);
         }
 

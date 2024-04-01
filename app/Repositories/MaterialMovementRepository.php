@@ -30,11 +30,9 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
         $materialMovement->checker_id = $data['checker_id'];
         $materialMovement->date = $data['date'];
         $materialMovement->truck_capacity = $data['truck_capacity'];
-        $materialMovement->observation_ratio_percentage = $data['observation_ratio_percentage'];
-        $materialMovement->observation_ratio_number = $data['observation_ratio_percentage'] * $data['truck_capacity'];
+        $materialMovement->observation_ratio = $data['observation_ratio'];
         $materialMovement->solid_ratio = $data['solid_ratio'];
-        $materialMovement->solid_volume_estimate = $materialMovement->observation_ratio_number * $data['solid_ratio'];
-        $materialMovement->ratio_measurement_ritage = $materialMovement->solid_volume_estimate / $materialMovement->observation_ratio_number;
+        $materialMovement->solid_volume_estimate = $materialMovement->observation_ratio * $data['solid_ratio'];
         $materialMovement->remarks = $data['remarks'];
         $materialMovement->save();
 
@@ -110,15 +108,15 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
     {
         $rawQuery = '';
         if ($statisticType == AggregateFunctionEnum::MIN->value) {
-            $rawQuery = 'MIN(material_movements.observation_ratio_number) as value';
+            $rawQuery = 'MIN(material_movements.observation_ratio) as value';
         } elseif ($statisticType == AggregateFunctionEnum::MAX->value) {
-            $rawQuery = 'MAX(material_movements.observation_ratio_number) as value';
+            $rawQuery = 'MAX(material_movements.observation_ratio) as value';
         } elseif ($statisticType == AggregateFunctionEnum::AVG->value) {
-            $rawQuery = 'AVG(material_movements.observation_ratio_number) as value';
+            $rawQuery = 'AVG(material_movements.observation_ratio) as value';
         } elseif ($statisticType == AggregateFunctionEnum::SUM->value) {
-            $rawQuery = 'SUM(material_movements.observation_ratio_number) as value';
+            $rawQuery = 'SUM(material_movements.observation_ratio) as value';
         } elseif ($statisticType == AggregateFunctionEnum::COUNT->value) {
-            $rawQuery = 'COUNT(material_movements.observation_ratio_number) as value';
+            $rawQuery = 'COUNT(material_movements.observation_ratio) as value';
         }
 
         $startDate = Carbon::now()->startOfDay();
@@ -166,15 +164,15 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
     {
         $rawQuery = '';
         if ($statisticType == AggregateFunctionEnum::MIN->value) {
-            $rawQuery = 'MIN(material_movements.observation_ratio_number) as value';
+            $rawQuery = 'MIN(material_movements.observation_ratio) as value';
         } elseif ($statisticType == AggregateFunctionEnum::MAX->value) {
-            $rawQuery = 'MAX(material_movements.observation_ratio_number) as value';
+            $rawQuery = 'MAX(material_movements.observation_ratio) as value';
         } elseif ($statisticType == AggregateFunctionEnum::AVG->value) {
-            $rawQuery = 'AVG(material_movements.observation_ratio_number) as value';
+            $rawQuery = 'AVG(material_movements.observation_ratio) as value';
         } elseif ($statisticType == AggregateFunctionEnum::SUM->value) {
-            $rawQuery = 'SUM(material_movements.observation_ratio_number) as value';
+            $rawQuery = 'SUM(material_movements.observation_ratio) as value';
         } elseif ($statisticType == AggregateFunctionEnum::COUNT->value) {
-            $rawQuery = 'COUNT(material_movements.observation_ratio_number) as value';
+            $rawQuery = 'COUNT(material_movements.observation_ratio) as value';
         }
 
         $startDate = Carbon::now()->startOfDay();
@@ -296,7 +294,7 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
             $endDate = MaterialMovement::orderBy('date', 'desc')->first()->date;
         }
 
-        $observationRatio = MaterialMovement::select('material_movements.station_id as station', DB::raw('SUM(material_movements.observation_ratio_number) as value'))
+        $observationRatio = MaterialMovement::select('material_movements.station_id as station', DB::raw('SUM(material_movements.observation_ratio) as value'))
             ->leftJoin('stations', 'stations.id', '=', 'material_movements.station_id')
             ->whereBetween(DB::raw('DATE(material_movements.date)'), [$startDate, $endDate])
             ->where('stations.category', $stationCategory)
@@ -341,11 +339,9 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
         $materialMovement->checker_id = $data['checker_id'];
         $materialMovement->date = $data['date'];
         $materialMovement->truck_capacity = $data['truck_capacity'];
-        $materialMovement->observation_ratio_percentage = $data['observation_ratio_percentage'];
-        $materialMovement->observation_ratio_number = $data['observation_ratio_percentage'] * $data['truck_capacity'];
+        $materialMovement->observation_ratio = $data['observation_ratio'];
         $materialMovement->solid_ratio = $data['solid_ratio'];
-        $materialMovement->solid_volume_estimate = $materialMovement->observation_ratio_number * $data['solid_ratio'];
-        $materialMovement->ratio_measurement_ritage = $materialMovement->solid_volume_estimate / $materialMovement->observation_ratio_number;
+        $materialMovement->solid_volume_estimate = $materialMovement->observation_ratio * $data['solid_ratio'];
         $materialMovement->remarks = $data['remarks'];
         $materialMovement->save();
 

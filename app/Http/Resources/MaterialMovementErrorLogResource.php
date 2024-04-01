@@ -23,7 +23,7 @@ class MaterialMovementErrorLogResource extends JsonResource
             'checker_id' => $this->checker_id,
             'date' => $this->date,
             'truck_capacity' => $this->truck_capacity,
-            'observation_ratio_percentage' => $this->observation_ratio_percentage,
+            'observation_ratio' => $this->observation_ratio,
             'solid_ratio' => $this->solid_ratio,
             'remarks' => $this->remarks,
             'error_log' => $this->error_log,

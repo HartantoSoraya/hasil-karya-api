@@ -30,11 +30,9 @@ class MaterialMovementSeeder extends Seeder
             $checker = Checker::inRandomOrder()->first();
             $date = now()->startOfYear()->addDays(rand(0, $days_difference))->toDateTimeString();
             $truckCapacity = $truck->capacity;
-            $observationRatioPercentage = rand(3, 10) / 10;
-            $observationRatioNumber = $truckCapacity * $observationRatioPercentage;
+            $observationRatio = $truckCapacity * (rand(3, 10) / 10);
             $solidRatio = rand(3, 10) / 10;
-            $solidVolumeEstimate = $observationRatioNumber * $solidRatio;
-            $ratio_measurement_ritage = $solidVolumeEstimate / $observationRatioNumber;
+            $solidVolumeEstimate = $observationRatio * $solidRatio;
 
             MaterialMovement::factory()->create([
                 'driver_id' => $driver->id,
@@ -43,11 +41,9 @@ class MaterialMovementSeeder extends Seeder
                 'checker_id' => $checker->id,
                 'date' => $date,
                 'truck_capacity' => $truckCapacity,
-                'observation_ratio_percentage' => $observationRatioPercentage,
-                'observation_ratio_number' => $observationRatioNumber,
+                'observation_ratio' => $observationRatio,
                 'solid_ratio' => $solidRatio,
                 'solid_volume_estimate' => $solidVolumeEstimate,
-                'ratio_measurement_ritage' => $ratio_measurement_ritage,
                 'remarks' => '',
             ]);
         }
