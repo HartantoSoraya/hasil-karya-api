@@ -17,7 +17,7 @@ class GasOperatorSeeder extends Seeder
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoleEnum::GAS_OPERATOR)->first())
-            ->create(['email' => 'gas_operator@cvhasilkarya.com']);
+            ->create(['email' => 'gas_operator@cvhasilkarya.co.id']);
 
         GasOperator::factory()->for($user)->create(['is_active' => true]);
     }
