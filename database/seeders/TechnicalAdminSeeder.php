@@ -17,7 +17,7 @@ class TechnicalAdminSeeder extends Seeder
     {
         $user = User::factory()
             ->hasAttached(Role::where('name', '=', UserRoleEnum::TECHNICAL_ADMIN)->first())
-            ->create(['email' => 'technical_admin@cvhasilkarya.com']);
+            ->create(['email' => 'technical_admin@cvhasilkarya.co.id']);
 
         TechnicalAdmin::factory()->for($user)->create(['is_active' => true]);
     }

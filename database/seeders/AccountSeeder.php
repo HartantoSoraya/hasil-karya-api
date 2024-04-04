@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enum\UserRoleEnum;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -13,8 +14,8 @@ class AccountSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'email' => 'admin@admin.com',
+            'email' => 'admin@cvhasilkarya.co.id',
             'password' => bcrypt('password'),
-        ])->assignRole('admin');
+        ])->assignRole(UserRoleEnum::ADMIN->value);
     }
 }
