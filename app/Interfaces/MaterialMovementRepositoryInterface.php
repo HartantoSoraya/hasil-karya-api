@@ -10,6 +10,8 @@ interface MaterialMovementRepositoryInterface
 
     public function getMaterialMovementById(string $id);
 
+    public function getMaterialMovementByTruck(string $truckId);
+
     // 1
     public function getStatisticTruckPerDayByStation($statisticType = null, $dateType = null, $stationCategory = null);
 

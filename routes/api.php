@@ -78,6 +78,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('fuel-log-error-logs', [FuelLogErrorLogController::class, 'index']);
 
         Route::get('material-movements', [MaterialMovementController::class, 'index']);
+        Route::get('material-movements/read/by-truck/{truckId}', [MaterialMovementController::class, 'getMaterialMovementByTruck']);
         Route::get('material-movements/read/statistic-truck-per-day-by-station', [MaterialMovementController::class, 'getStatisticTruckPerDayByStation']);
         Route::get('material-movements/read/statistic-ritage-per-day-by-station', [MaterialMovementController::class, 'getStatisticRitagePerDayByStation']);
         Route::get('material-movements/read/statistic-measurement-volume-by-station', [MaterialMovementController::class, 'getStatisticMeasurementVolumeByStation']);

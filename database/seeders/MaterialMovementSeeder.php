@@ -18,7 +18,7 @@ class MaterialMovementSeeder extends Seeder
      */
     public function run(): void
     {
-        for ($i = 0; $i < 30; $i++) {
+        for ($i = 0; $i < 400; $i++) {
             $start_date = now()->startOfYear();
             $current_date = new DateTime();
             $interval = $current_date->diff($start_date);

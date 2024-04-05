@@ -13,6 +13,7 @@ use App\Models\Station;
 use App\Models\Truck;
 use App\Models\User;
 use App\Models\Vendor;
+use DateTime;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
@@ -230,6 +231,64 @@ class MaterialMovementAPITest extends TestCase
             ->create();
 
         $response = $this->json('GET', '/api/v1/material-movement/'.$materialMovement->id);
+
+        $response->assertSuccessful();
+    }
+
+    public function test_material_movement_api_call_get_material_movement_by_truck()
+    {
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRoleEnum::ADMIN)->first())
+            ->create();
+
+        $this->actingAs($user);
+
+        Driver::factory()->count(5)->create(['is_active' => true]);
+
+        Truck::factory()
+            ->for(Vendor::factory())
+            ->count(5)->create(['is_active' => true]);
+
+        Station::factory()->count(5)->create(['is_active' => true]);
+
+        Checker::factory()
+            ->for(User::factory()->hasAttached(Role::where('name', '=', UserRoleEnum::CHECKER)->first()))
+            ->count(5)
+            ->create(['is_active' => true]);
+
+        for ($i = 0; $i < (now()->month * 100); $i++) {
+            $start_date = now()->startOfYear();
+            $current_date = new DateTime();
+            $interval = $current_date->diff($start_date);
+            $days_difference = $interval->days;
+
+            $driver = Driver::inRandomOrder()->first();
+            $truck = Truck::inRandomOrder()->first();
+            $station = Station::where('category', '!=', StationCategoryEnum::GAS->value)->inRandomOrder()->first();
+            $checker = Checker::inRandomOrder()->first();
+            $date = now()->startOfYear()->addDays(rand(0, $days_difference))->toDateTimeString();
+            $truckCapacity = $truck->capacity;
+            $observationRatio = $truckCapacity * (rand(3, 10) / 10);
+            $solidRatio = rand(3, 10) / 10;
+            $solidVolumeEstimate = $observationRatio * $solidRatio;
+
+            MaterialMovement::factory()->create([
+                'driver_id' => $driver->id,
+                'truck_id' => $truck->id,
+                'station_id' => $station->id,
+                'checker_id' => $checker->id,
+                'date' => $date,
+                'truck_capacity' => $truckCapacity,
+                'observation_ratio' => $observationRatio,
+                'solid_ratio' => $solidRatio,
+                'solid_volume_estimate' => $solidVolumeEstimate,
+                'remarks' => '',
+            ]);
+        }
+
+        $truck = Truck::inRandomOrder()->first();
+
+        $response = $this->json('GET', '/api/v1/material-movements/read/by-truck/'.$truck->id);
 
         $response->assertSuccessful();
     }

@@ -47,6 +47,55 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
         return $materialMovement;
     }
 
+    public function getMaterialMovementByTruck(string $truckId)
+    {
+        try {
+            $materialMovements = MaterialMovement::with('driver', 'truck', 'station', 'checker')
+                ->where('truck_id', $truckId)
+                ->orderBy('date', 'desc')->get();
+
+            $materialMovements = $materialMovements->map(function ($item, $key) use ($materialMovements) {
+                if ($key == 0) {
+                    $item['date_difference'] = 0;
+                } else {
+                    $date = Carbon::parse($item['date']);
+                    $previousDate = Carbon::parse($materialMovements[$key - 1]['date']);
+
+                    $days = $date->diffInDays($previousDate);
+                    $hours = $date->diffInHours($previousDate) % 24;
+                    $minutes = $date->diffInMinutes($previousDate) % 60;
+                    $seconds = $date->diffInSeconds($previousDate) % 60;
+
+                    $differenceString = '';
+
+                    if ($days > 0) {
+                        $differenceString .= "$days hari";
+                    }
+
+                    if ($hours > 0) {
+                        $differenceString .= ", $hours jam";
+                    }
+
+                    if ($minutes > 0) {
+                        $differenceString .= ", $minutes menit";
+                    }
+
+                    if ($seconds > 0) {
+                        $differenceString .= ", $seconds detik";
+                    }
+
+                    $item['date_difference'] = $differenceString;
+                }
+
+                return $item;
+            });
+
+            return $materialMovements;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
     // 1
     public function getStatisticTruckPerDayByStation($statisticType = null, $dateType = null, $stationCategory = null)
     {

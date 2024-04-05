@@ -98,6 +98,21 @@ class MaterialMovementController extends Controller
         }
     }
 
+    public function getMaterialMovementByTruck($truckId)
+    {
+        try {
+            $materialMovement = $this->MaterialMovementRepository->getMaterialMovementByTruck($truckId);
+
+            if (! $materialMovement) {
+                return ResponseHelper::jsonResponse(false, 'Material movement tidak ditemukan.', null, 404);
+            }
+
+            return ResponseHelper::jsonResponse(true, 'Success', collect($materialMovement), 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
+    }
+
     public function getStatisticTruckPerDayByStation(Request $request)
     {
         try {
