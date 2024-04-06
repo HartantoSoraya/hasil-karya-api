@@ -88,7 +88,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
         Route::get('material-movement-error-logs', [MaterialMovementErrorLogController::class, 'index']);
 
-        Route::get('material-movement-solid-volume-estimates', [MaterialMovementController::class, 'index']);
+        Route::get('material-movement-solid-volume-estimates', [MaterialMovementSolidVolumeEstimateController::class, 'index']);
 
         Route::get('notification-recepients', [NotificationRecepientController::class, 'index']);
 

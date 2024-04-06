@@ -18,6 +18,7 @@ class MaterialMovementSolidVolumeEstimateResource extends JsonResource
             'id' => $this->id,
             'code' => $this->code,
             'date' => $this->date,
+            'station' => StationResource::make($this->whenLoaded('station')),
             'solid_volume_estimate' => $this->solid_volume_estimate,
             'remarks' => $this->remarks,
         ];
