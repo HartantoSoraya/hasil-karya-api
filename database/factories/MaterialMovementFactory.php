@@ -19,7 +19,6 @@ class MaterialMovementFactory extends Factory
         $observation_ratio = $truck_capacity * $this->faker->randomFloat(2, 0.3, 1);
         $solid_ratio = $this->faker->randomFloat(4, 0.0, 1);
         $solid_volume_estimate = $observation_ratio * $solid_ratio;
-        $ratio_measurement_ritage = $solid_volume_estimate / $observation_ratio;
 
         return [
             'code' => Str::random(10),

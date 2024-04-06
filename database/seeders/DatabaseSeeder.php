@@ -17,26 +17,28 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             AccountSeeder::class,
 
-            // ClientSeeder::class,
-            // VendorSeeder::class,
-            // MaterialSeeder::class,
-            // StationSeeder::class,
+            ClientSeeder::class,
+            VendorSeeder::class,
+            MaterialSeeder::class,
+            StationSeeder::class,
 
-            // TruckSeeder::class,
-            // HeavyVehicleSeeder::class,
-            // DriverSeeder::class,
+            TruckSeeder::class,
+            HeavyVehicleSeeder::class,
+            DriverSeeder::class,
 
-            // VehicleRentalRecordSeeder::class,
+            VehicleRentalRecordSeeder::class,
 
-            // TechnicalAdminSeeder::class,
-            // GasOperatorSeeder::class,
-            // CheckerSeeder::class,
+            TechnicalAdminSeeder::class,
+            GasOperatorSeeder::class,
+            CheckerSeeder::class,
 
-            // MaterialMovementSeeder::class,
+            MaterialMovementSeeder::class,
 
-            // ProjectSeeder::class,
+            MaterialMovementSolidVolumeEstimateSeeder::class,
 
-            // NotificationRecepientSeeder::class,
+            ProjectSeeder::class,
+
+            NotificationRecepientSeeder::class,
         ]);
     }
 }

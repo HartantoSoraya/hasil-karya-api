@@ -6,6 +6,7 @@ use App\Enum\AggregateFunctionEnum;
 use App\Enum\DatePeriodEnum;
 use App\Interfaces\MaterialMovementRepositoryInterface;
 use App\Models\MaterialMovement;
+use App\Models\MaterialMovementSolidVolumeEstimate;
 use App\Models\Station;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,34 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
     {
         $materialMovements = MaterialMovement::with('driver', 'truck', 'station', 'checker')
             ->orderBy('date', 'desc')->get();
+
+        $lastDate = MaterialMovementSolidVolumeEstimate::orderBy('date', 'desc')->first();
+
+        if ($lastDate) {
+            $lastDate = $lastDate->date;
+        } else {
+            $lastDate = Carbon::now();
+        }
+
+        $solidVolumeEstimateTotal = MaterialMovementSolidVolumeEstimate::select('station_id', DB::raw('SUM(solid_volume_estimate) as value'))
+            ->where('date', '<=', $lastDate)
+            ->groupBy('station_id')
+            ->get();
+
+        $observationRatioTotal = MaterialMovement::select('station_id', DB::raw('SUM(observation_ratio) as value'))
+            ->where('date', '<=', $lastDate)
+            ->groupBy('station_id')
+            ->get();
+
+        $materialMovements = $materialMovements->map(function ($item) use ($solidVolumeEstimateTotal, $observationRatioTotal) {
+            $solidVolumeEstimateTotalItem = $solidVolumeEstimateTotal->where('station_id', $item['station_id'])->first();
+            $observationRatioTotalItem = $observationRatioTotal->where('station_id', $item['station_id'])->first();
+
+            $item['solid_ratio'] = ($solidVolumeEstimateTotalItem['value'] + 0 ?? 0) / ($observationRatioTotalItem['value'] + 0);
+            $item['solid_volume_estimate'] = $item['observation_ratio'] * $item['solid_ratio'];
+
+            return $item;
+        });
 
         return $materialMovements;
     }
@@ -45,6 +74,55 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
             ->find($id);
 
         return $materialMovement;
+    }
+
+    public function getMaterialMovementByTruck(string $truckId)
+    {
+        try {
+            $materialMovements = MaterialMovement::with('driver', 'truck', 'station', 'checker')
+                ->where('truck_id', $truckId)
+                ->orderBy('date', 'desc')->get();
+
+            $materialMovements = $materialMovements->map(function ($item, $key) use ($materialMovements) {
+                if ($key == 0) {
+                    $item['date_difference'] = 0;
+                } else {
+                    $date = Carbon::parse($item['date']);
+                    $previousDate = Carbon::parse($materialMovements[$key - 1]['date']);
+
+                    $days = $date->diffInDays($previousDate);
+                    $hours = $date->diffInHours($previousDate) % 24;
+                    $minutes = $date->diffInMinutes($previousDate) % 60;
+                    $seconds = $date->diffInSeconds($previousDate) % 60;
+
+                    $differenceString = '';
+
+                    if ($days > 0) {
+                        $differenceString .= "$days hari";
+                    }
+
+                    if ($hours > 0) {
+                        $differenceString .= ", $hours jam";
+                    }
+
+                    if ($minutes > 0) {
+                        $differenceString .= ", $minutes menit";
+                    }
+
+                    if ($seconds > 0) {
+                        $differenceString .= ", $seconds detik";
+                    }
+
+                    $item['date_difference'] = $differenceString;
+                }
+
+                return $item;
+            });
+
+            return $materialMovements;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 
     // 1

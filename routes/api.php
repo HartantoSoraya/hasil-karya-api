@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\HeavyVehicleController;
 use App\Http\Controllers\Api\MaterialController;
 use App\Http\Controllers\Api\MaterialMovementController;
 use App\Http\Controllers\Api\MaterialMovementErrorLogController;
+use App\Http\Controllers\Api\MaterialMovementSolidVolumeEstimateController;
 use App\Http\Controllers\Api\NotificationRecepientController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\StationController;
@@ -78,6 +79,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('fuel-log-error-logs', [FuelLogErrorLogController::class, 'index']);
 
         Route::get('material-movements', [MaterialMovementController::class, 'index']);
+        Route::get('material-movements/read/by-truck/{truckId}', [MaterialMovementController::class, 'getMaterialMovementByTruck']);
         Route::get('material-movements/read/statistic-truck-per-day-by-station', [MaterialMovementController::class, 'getStatisticTruckPerDayByStation']);
         Route::get('material-movements/read/statistic-ritage-per-day-by-station', [MaterialMovementController::class, 'getStatisticRitagePerDayByStation']);
         Route::get('material-movements/read/statistic-measurement-volume-by-station', [MaterialMovementController::class, 'getStatisticMeasurementVolumeByStation']);
@@ -85,6 +87,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
         Route::get('material-movements/read/ratio-measurement-by-ritage', [MaterialMovementController::class, 'getRatioMeasurementByRitage']);
 
         Route::get('material-movement-error-logs', [MaterialMovementErrorLogController::class, 'index']);
+
+        Route::get('material-movement-solid-volume-estimates', [MaterialMovementController::class, 'index']);
 
         Route::get('notification-recepients', [NotificationRecepientController::class, 'index']);
 
@@ -96,69 +100,105 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
-    Route::apiResource('client', ClientController::class);
+    Route::post('client', [ClientController::class, 'store']);
+    Route::get('client/{id}', [ClientController::class, 'show']);
     Route::post('client/{id}', [ClientController::class, 'update']);
+    Route::delete('client/{id}', [ClientController::class, 'destroy']);
 
-    Route::apiResource('project', ProjectController::class);
-    Route::post('project/{id}', [ProjectController::class, 'update']);
+    Route::post('project', [ProjectController::class, 'store']);
+    Route::get('project/{id}', [ProjectController::class, 'show']);
     Route::get('project/read/status', [ProjectController::class, 'getProjectStatus']);
+    Route::post('project/{id}', [ProjectController::class, 'update']);
+    Route::delete('project/{id}', [ProjectController::class, 'destroy']);
 
-    Route::apiResource('driver', DriverController::class);
+    Route::post('driver', [DriverController::class, 'store']);
+    Route::get('driver/{id}', [DriverController::class, 'show']);
     Route::post('driver/{id}', [DriverController::class, 'update']);
     Route::post('driver/active/{id}', [DriverController::class, 'updateActiveStatus']);
+    Route::delete('driver/{id}', [DriverController::class, 'destroy']);
 
-    Route::apiResource('vendor', VendorController::class);
+    Route::post('vendor', [VendorController::class, 'store']);
+    Route::get('vendor/{id}', [VendorController::class, 'show']);
     Route::post('vendor/{id}', [VendorController::class, 'update']);
     Route::post('vendor/active/{id}', [VendorController::class, 'updateActiveStatus']);
+    Route::delete('vendor/{id}', [VendorController::class, 'destroy']);
 
-    Route::apiResource('truck', TruckController::class);
+    Route::post('truck', [TruckController::class, 'store']);
+    Route::get('truck/{id}', [TruckController::class, 'show']);
     Route::post('truck/{id}', [TruckController::class, 'update']);
     Route::post('truck/active/{id}', [TruckController::class, 'updateActiveStatus']);
+    Route::delete('truck/{id}', [TruckController::class, 'destroy']);
 
-    Route::apiResource('heavy-vehicle', HeavyVehicleController::class);
+    Route::post('heavy-vehicle', [HeavyVehicleController::class, 'store']);
+    Route::get('heavy-vehicle/{id}', [HeavyVehicleController::class, 'show']);
     Route::post('heavy-vehicle/{id}', [HeavyVehicleController::class, 'update']);
     Route::post('heavy-vehicle/active/{id}', [HeavyVehicleController::class, 'updateActiveStatus']);
+    Route::delete('heavy-vehicle/{id}', [HeavyVehicleController::class, 'destroy']);
 
-    Route::apiResource('vehicle-rental-record', VehicleRentalRecordController::class);
-    Route::post('vehicle-rental-record/{id}', [VehicleRentalRecordController::class, 'update']);
+    Route::post('vehicle-rental-record', [VehicleRentalRecordController::class, 'store']);
+    Route::get('vehicle-rental-record/{id}', [VehicleRentalRecordController::class, 'show']);
     Route::get('vehicle-rental-record/read/status', [VehicleRentalRecordController::class, 'getVehicleRentalRecordStatus']);
+    Route::post('vehicle-rental-record/{id}', [VehicleRentalRecordController::class, 'update']);
     Route::post('vehicle-rental-record/payment/{id}', [VehicleRentalRecordController::class, 'updateRentalPaymentStatus']);
+    Route::delete('vehicle-rental-record/{id}', [VehicleRentalRecordController::class, 'destroy']);
 
-    Route::apiResource('material', MaterialController::class);
+    Route::post('material', [MaterialController::class, 'store']);
+    Route::get('material/{id}', [MaterialController::class, 'show']);
     Route::post('material/{id}', [MaterialController::class, 'update']);
+    Route::delete('material/{id}', [MaterialController::class, 'destroy']);
 
-    Route::apiResource('station', StationController::class);
-    Route::post('station/{id}', [StationController::class, 'update']);
+    Route::post('station', [StationController::class, 'store']);
+    Route::get('station/{id}', [StationController::class, 'show']);
     Route::get('station/read/categories', [StationController::class, 'getStationCategory']);
+    Route::post('station/{id}', [StationController::class, 'update']);
     Route::post('station/active/{id}', [StationController::class, 'updateActiveStatus']);
+    Route::delete('station/{id}', [StationController::class, 'destroy']);
 
-    Route::apiResource('technical-admin', TechnicalAdminController::class);
+    Route::post('technical-admin', [TechnicalAdminController::class, 'store']);
+    Route::get('technical-admin/{id}', [TechnicalAdminController::class, 'show']);
     Route::post('technical-admin/{id}', [TechnicalAdminController::class, 'update']);
     Route::post('technical-admin/active/{id}', [TechnicalAdminController::class, 'updateActiveStatus']);
+    Route::delete('technical-admin/{id}', [TechnicalAdminController::class, 'destroy']);
 
-    Route::apiResource('gas-operator', GasOperatorController::class);
+    Route::post('gas-operator', [GasOperatorController::class, 'store']);
+    Route::get('gas-operator/{id}', [GasOperatorController::class, 'show']);
     Route::post('gas-operator/{id}', [GasOperatorController::class, 'update']);
     Route::post('gas-operator/active/{id}', [GasOperatorController::class, 'updateActiveStatus']);
+    Route::delete('gas-operator/{id}', [GasOperatorController::class, 'destroy']);
 
-    Route::apiResource('checker', CheckerController::class);
+    Route::post('checker', [CheckerController::class, 'store']);
+    Route::get('checker/{id}', [CheckerController::class, 'show']);
     Route::post('checker/{id}', [CheckerController::class, 'update']);
     Route::post('checker/active/{id}', [CheckerController::class, 'updateActiveStatus']);
+    Route::delete('checker/{id}', [CheckerController::class, 'destroy']);
 
     Route::post('fuel-log/truck', [FuelLogController::class, 'storeTruck']);
     Route::post('fuel-log/heavy-vehicle', [FuelLogController::class, 'storeHeavyVehicle']);
+    Route::get('fuel-log/{id}', [FuelLogController::class, 'show']);
     Route::get('fuel-log/read/fuel-types', [FuelLogController::class, 'getFuelType']);
     Route::post('fuel-log/truck/{id}', [FuelLogController::class, 'updateTruck']);
     Route::post('fuel-log/heavy-vehicle/{id}', [FuelLogController::class, 'updateHeavyVehicle']);
 
-    Route::apiResource('fuel-log', FuelLogController::class)->except(['store', 'update']);
+    Route::post('fuel-log-error-log', [FuelLogErrorLogController::class, 'store']);
+    Route::get('fuel-log-error-log/{id}', [FuelLogErrorLogController::class, 'show']);
     Route::post('fuel-log/{id}', [FuelLogController::class, 'update']);
+    Route::delete('fuel-log/{id}', [FuelLogController::class, 'destroy']);
 
-    Route::apiResource('material-movement', MaterialMovementController::class);
+    Route::post('material-movement', [MaterialMovementController::class, 'store']);
+    Route::get('material-movement/{id}', [MaterialMovementController::class, 'show']);
     Route::post('material-movement/{id}', [MaterialMovementController::class, 'update']);
+    Route::delete('material-movement/{id}', [MaterialMovementController::class, 'destroy']);
 
-    Route::apiResource('notification-recepient', NotificationRecepientController::class);
+    Route::post('material-movement-solid-volume-estimate', [MaterialMovementSolidVolumeEstimateController::class, 'store']);
+    Route::get('material-movement-solid-volume-estimate/{id}', [MaterialMovementSolidVolumeEstimateController::class, 'show']);
+    Route::post('material-movement-solid-volume-estimate/{id}', [MaterialMovementSolidVolumeEstimateController::class, 'update']);
+    Route::delete('material-movement-solid-volume-estimate/{id}', [MaterialMovementSolidVolumeEstimateController::class, 'destroy']);
+
+    Route::post('notification-recepient', [NotificationRecepientController::class, 'store']);
+    Route::get('notification-recepient/{id}', [NotificationRecepientController::class, 'show']);
     Route::post('notification-recepient/{id}', [NotificationRecepientController::class, 'update']);
     Route::post('notification-recepient/active/{id}', [NotificationRecepientController::class, 'updateActiveStatus']);
+    Route::delete('notification-recepient/{id}', [NotificationRecepientController::class, 'destroy']);
 
     Route::post('fuel-log-error-log/truck', [FuelLogErrorLogController::class, 'storeTruck']);
     Route::post('fuel-log-error-log/heavy-vehicle', [FuelLogErrorLogController::class, 'storeHeavyVehicle']);
