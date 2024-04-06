@@ -20,7 +20,7 @@ class StoreStationRequest extends FormRequest
             'regency' => 'nullable|string|max:255',
             'district' => 'nullable|string|max:255',
             'subdistrict' => 'nullable|string|max:255',
-            'address' => 'required|string|max:255',
+            'address' => 'nullable|string|max:255',
             'category' => 'required|string|max:255',
             'material_id' => 'nullable|exists:materials,id',
             'is_active' => 'required|boolean',
