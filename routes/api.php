@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\TruckController;
 use App\Http\Controllers\Api\VehicleRentalRecordController;
 use App\Http\Controllers\Api\VendorController;
 use App\Http\Controllers\CommonController;
+use App\Models\MaterialMovementSolidVolumeEstimate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -88,7 +89,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
         Route::get('material-movement-error-logs', [MaterialMovementErrorLogController::class, 'index']);
 
-        Route::get('material-movement-solid-volume-estimates', [MaterialMovementController::class, 'index']);
+        Route::get('material-movement-solid-volume-estimates', [MaterialMovementSolidVolumeEstimate::class, 'index']);
 
         Route::get('notification-recepients', [NotificationRecepientController::class, 'index']);
 
