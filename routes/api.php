@@ -21,7 +21,6 @@ use App\Http\Controllers\Api\TruckController;
 use App\Http\Controllers\Api\VehicleRentalRecordController;
 use App\Http\Controllers\Api\VendorController;
 use App\Http\Controllers\CommonController;
-use App\Models\MaterialMovementSolidVolumeEstimate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
