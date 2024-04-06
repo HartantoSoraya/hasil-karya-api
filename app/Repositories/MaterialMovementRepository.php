@@ -6,6 +6,7 @@ use App\Enum\AggregateFunctionEnum;
 use App\Enum\DatePeriodEnum;
 use App\Interfaces\MaterialMovementRepositoryInterface;
 use App\Models\MaterialMovement;
+use App\Models\MaterialMovementSolidVolumeEstimate;
 use App\Models\Station;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,34 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
     {
         $materialMovements = MaterialMovement::with('driver', 'truck', 'station', 'checker')
             ->orderBy('date', 'desc')->get();
+
+        $lastDate = MaterialMovementSolidVolumeEstimate::orderBy('date', 'desc')->first();
+
+        if ($lastDate) {
+            $lastDate = $lastDate->date;
+        } else {
+            $lastDate = Carbon::now();
+        }
+
+        $solidVolumeEstimateTotal = MaterialMovementSolidVolumeEstimate::select('station_id', DB::raw('SUM(solid_volume_estimate) as value'))
+            ->where('date', '<=', $lastDate)
+            ->groupBy('station_id')
+            ->get();
+
+        $observationRatioTotal = MaterialMovement::select('station_id', DB::raw('SUM(observation_ratio) as value'))
+            ->where('date', '<=', $lastDate)
+            ->groupBy('station_id')
+            ->get();
+
+        $materialMovements = $materialMovements->map(function ($item) use ($solidVolumeEstimateTotal, $observationRatioTotal) {
+            $solidVolumeEstimateTotalItem = $solidVolumeEstimateTotal->where('station_id', $item['station_id'])->first();
+            $observationRatioTotalItem = $observationRatioTotal->where('station_id', $item['station_id'])->first();
+
+            $item['solid_ratio'] = ($solidVolumeEstimateTotalItem['value'] + 0 ?? 0) / ($observationRatioTotalItem['value'] + 0);
+            $item['solid_volume_estimate'] = $item['observation_ratio'] * $item['solid_ratio'];
+
+            return $item;
+        });
 
         return $materialMovements;
     }
