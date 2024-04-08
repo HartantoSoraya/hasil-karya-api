@@ -269,8 +269,6 @@ class MaterialMovementAPITest extends TestCase
             $date = now()->startOfYear()->addDays(rand(0, $days_difference))->toDateTimeString();
             $truckCapacity = $truck->capacity;
             $observationRatio = $truckCapacity * (rand(3, 10) / 10);
-            $solidRatio = rand(3, 10) / 10;
-            $solidVolumeEstimate = $observationRatio * $solidRatio;
 
             MaterialMovement::factory()->create([
                 'driver_id' => $driver->id,
@@ -280,8 +278,6 @@ class MaterialMovementAPITest extends TestCase
                 'date' => $date,
                 'truck_capacity' => $truckCapacity,
                 'observation_ratio' => $observationRatio,
-                'solid_ratio' => $solidRatio,
-                'solid_volume_estimate' => $solidVolumeEstimate,
                 'remarks' => '',
             ]);
         }

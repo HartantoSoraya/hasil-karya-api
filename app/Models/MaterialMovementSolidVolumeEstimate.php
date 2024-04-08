@@ -34,10 +34,6 @@ class MaterialMovementSolidVolumeEstimate extends Model
             ->useLogName('MaterialMovementSolidVolumeEstimate');
     }
 
-    protected $casts = [
-        'date' => 'datetime',
-    ];
-
     public function station()
     {
         return $this->belongsTo(Station::class);

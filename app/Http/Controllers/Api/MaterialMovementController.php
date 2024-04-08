@@ -135,10 +135,10 @@ class MaterialMovementController extends Controller
         }
     }
 
-    public function getStatisticMeasurementVolumeByStation(Request $request)
+    public function getStatisticRitageVolumeByStation(Request $request)
     {
         try {
-            $result = $this->MaterialMovementRepository->getStatisticMeasurementVolumeByStation($request->statistic_type, $request->date_type, $request->station_category);
+            $result = $this->MaterialMovementRepository->getStatisticRitageVolumeByStation($request->statistic_type, $request->date_type, $request->station_category);
 
             return ResponseHelper::jsonResponse(true, 'Success', $result, 200);
         } catch (\Exception $e) {
@@ -146,10 +146,10 @@ class MaterialMovementController extends Controller
         }
     }
 
-    public function getStatisticRitageVolumeByStation(Request $request)
+    public function getStatisticMeasurementVolumeByStation(Request $request)
     {
         try {
-            $result = $this->MaterialMovementRepository->getStatisticRitageVolumeByStation($request->statistic_type, $request->date_type, $request->station_category);
+            $result = $this->MaterialMovementRepository->getStatisticMeasurementVolumeByStation($request->statistic_type, $request->date_type, $request->station_category);
 
             return ResponseHelper::jsonResponse(true, 'Success', $result, 200);
         } catch (\Exception $e) {

@@ -22,7 +22,6 @@ class UpdateMaterialMovementRequest extends FormRequest
             'date' => 'required|date',
             'truck_capacity' => 'nullable|numeric|min:0',
             'observation_ratio' => 'required|numeric|min:0',
-            'solid_ratio' => 'nullable|numeric|min:0',
             'remarks' => 'nullable|string',
         ];
     }
@@ -43,10 +42,6 @@ class UpdateMaterialMovementRequest extends FormRequest
 
         if (! $this->has('observation_ratio')) {
             $this->merge(['observation_ratio' => 0]);
-        }
-
-        if (! $this->has('solid_ratio')) {
-            $this->merge(['solid_ratio' => 0]);
         }
 
         if (! $this->has('remarks')) {
