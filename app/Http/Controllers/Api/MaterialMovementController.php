@@ -113,6 +113,7 @@ class MaterialMovementController extends Controller
         }
     }
 
+    // 1
     public function getStatisticTruckPerDayByStation(Request $request)
     {
         try {
@@ -124,6 +125,7 @@ class MaterialMovementController extends Controller
         }
     }
 
+    // 2
     public function getStatisticRitagePerDayByStation(Request $request)
     {
         try {
@@ -135,6 +137,7 @@ class MaterialMovementController extends Controller
         }
     }
 
+    // 3
     public function getStatisticRitageVolumeByStation(Request $request)
     {
         try {
@@ -146,6 +149,7 @@ class MaterialMovementController extends Controller
         }
     }
 
+    // 4
     public function getStatisticMeasurementVolumeByStation(Request $request)
     {
         try {
@@ -157,6 +161,7 @@ class MaterialMovementController extends Controller
         }
     }
 
+    // 5
     public function getRatioMeasurementByRitage(Request $request)
     {
         try {

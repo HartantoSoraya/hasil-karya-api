@@ -18,10 +18,10 @@ interface MaterialMovementRepositoryInterface
     // 2
     public function getStatisticRitagePerDayByStation($statisticType = null, $dateType = null, $stationCategory = null);
 
-    // 4
+    // 3
     public function getStatisticRitageVolumeByStation($statisticType = null, $dateType = null, $stationCategory = null);
 
-    // 3
+    // 4
     public function getStatisticMeasurementVolumeByStation($statisticType = null, $dateType = null, $stationCategory = null);
 
     // 5
