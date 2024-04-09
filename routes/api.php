@@ -80,10 +80,16 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 
         Route::get('material-movements', [MaterialMovementController::class, 'index']);
         Route::get('material-movements/read/by-truck/{truckId}', [MaterialMovementController::class, 'getMaterialMovementByTruck']);
+
+        // 1
         Route::get('material-movements/read/statistic-truck-per-day-by-station', [MaterialMovementController::class, 'getStatisticTruckPerDayByStation']);
+        // 2
         Route::get('material-movements/read/statistic-ritage-per-day-by-station', [MaterialMovementController::class, 'getStatisticRitagePerDayByStation']);
-        Route::get('material-movements/read/statistic-measurement-volume-by-station', [MaterialMovementController::class, 'getStatisticMeasurementVolumeByStation']);
+        // 3
         Route::get('material-movements/read/statistic-ritage-volume-by-station', [MaterialMovementController::class, 'getStatisticRitageVolumeByStation']);
+        // 4
+        Route::get('material-movements/read/statistic-measurement-volume-by-station', [MaterialMovementController::class, 'getStatisticMeasurementVolumeByStation']);
+        // 5
         Route::get('material-movements/read/ratio-measurement-by-ritage', [MaterialMovementController::class, 'getRatioMeasurementByRitage']);
 
         Route::get('material-movement-error-logs', [MaterialMovementErrorLogController::class, 'index']);

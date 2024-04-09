@@ -23,8 +23,6 @@ class MaterialMovement extends Model
         'date',
         'truck_capacity',
         'observation_ratio',
-        'solid_ratio',
-        'solid_volume_estimate',
         'remarks',
     ];
 
@@ -40,8 +38,6 @@ class MaterialMovement extends Model
                 'date',
                 'truck_capacity',
                 'observation_ratio',
-                'solid_ratio',
-                'solid_volume_estimate',
                 'remarks',
             ])->setDescriptionForEvent(fn (string $eventName) => "This model has been {$eventName}")
             ->useLogName('MaterialMovement');

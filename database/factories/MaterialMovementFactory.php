@@ -25,8 +25,6 @@ class MaterialMovementFactory extends Factory
             'date' => $this->faker->dateTimeThisMonth()->format('Y-m-d H:i:s'),
             'truck_capacity' => random_int(5, 20),
             'observation_ratio' => $observation_ratio,
-            'solid_ratio' => $solid_ratio,
-            'solid_volume_estimate' => $solid_volume_estimate,
             'remarks' => $this->faker->text(),
         ];
     }

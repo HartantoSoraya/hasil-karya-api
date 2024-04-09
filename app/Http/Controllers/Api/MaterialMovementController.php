@@ -113,6 +113,7 @@ class MaterialMovementController extends Controller
         }
     }
 
+    // 1
     public function getStatisticTruckPerDayByStation(Request $request)
     {
         try {
@@ -124,6 +125,7 @@ class MaterialMovementController extends Controller
         }
     }
 
+    // 2
     public function getStatisticRitagePerDayByStation(Request $request)
     {
         try {
@@ -135,17 +137,7 @@ class MaterialMovementController extends Controller
         }
     }
 
-    public function getStatisticMeasurementVolumeByStation(Request $request)
-    {
-        try {
-            $result = $this->MaterialMovementRepository->getStatisticMeasurementVolumeByStation($request->statistic_type, $request->date_type, $request->station_category);
-
-            return ResponseHelper::jsonResponse(true, 'Success', $result, 200);
-        } catch (\Exception $e) {
-            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
-        }
-    }
-
+    // 3
     public function getStatisticRitageVolumeByStation(Request $request)
     {
         try {
@@ -157,6 +149,19 @@ class MaterialMovementController extends Controller
         }
     }
 
+    // 4
+    public function getStatisticMeasurementVolumeByStation(Request $request)
+    {
+        try {
+            $result = $this->MaterialMovementRepository->getStatisticMeasurementVolumeByStation($request->statistic_type, $request->date_type, $request->station_category);
+
+            return ResponseHelper::jsonResponse(true, 'Success', $result, 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
+    }
+
+    // 5
     public function getRatioMeasurementByRitage(Request $request)
     {
         try {

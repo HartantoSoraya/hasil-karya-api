@@ -18,7 +18,7 @@ class MaterialMovementSeeder extends Seeder
      */
     public function run(): void
     {
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 1000; $i++) {
             $start_date = now()->startOfYear();
             $current_date = new DateTime();
             $interval = $current_date->diff($start_date);
@@ -28,11 +28,9 @@ class MaterialMovementSeeder extends Seeder
             $truck = Truck::inRandomOrder()->first();
             $station = Station::where('category', '!=', StationCategoryEnum::GAS->value)->inRandomOrder()->first();
             $checker = Checker::inRandomOrder()->first();
-            $date = now()->startOfYear()->addDays(rand(0, $days_difference))->toDateTimeString();
+            $date = now()->startOfYear()->addDays(rand(0, $days_difference))->addHours(rand(0, 23))->addMinutes(rand(0, 59))->addSeconds(rand(0, 59))->toDateTimeString();
             $truckCapacity = $truck->capacity;
             $observationRatio = $truckCapacity * (rand(3, 10) / 10);
-            $solidRatio = rand(3, 10) / 10;
-            $solidVolumeEstimate = $observationRatio * $solidRatio;
 
             MaterialMovement::factory()->create([
                 'driver_id' => $driver->id,
@@ -42,8 +40,6 @@ class MaterialMovementSeeder extends Seeder
                 'date' => $date,
                 'truck_capacity' => $truckCapacity,
                 'observation_ratio' => $observationRatio,
-                'solid_ratio' => $solidRatio,
-                'solid_volume_estimate' => $solidVolumeEstimate,
                 'remarks' => '',
             ]);
         }

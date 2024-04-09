@@ -269,8 +269,6 @@ class MaterialMovementAPITest extends TestCase
             $date = now()->startOfYear()->addDays(rand(0, $days_difference))->toDateTimeString();
             $truckCapacity = $truck->capacity;
             $observationRatio = $truckCapacity * (rand(3, 10) / 10);
-            $solidRatio = rand(3, 10) / 10;
-            $solidVolumeEstimate = $observationRatio * $solidRatio;
 
             MaterialMovement::factory()->create([
                 'driver_id' => $driver->id,
@@ -280,8 +278,6 @@ class MaterialMovementAPITest extends TestCase
                 'date' => $date,
                 'truck_capacity' => $truckCapacity,
                 'observation_ratio' => $observationRatio,
-                'solid_ratio' => $solidRatio,
-                'solid_volume_estimate' => $solidVolumeEstimate,
                 'remarks' => '',
             ]);
         }
@@ -293,6 +289,7 @@ class MaterialMovementAPITest extends TestCase
         $response->assertSuccessful();
     }
 
+    // 1
     public function test_material_movement_api_call_get_statistic_truck_per_day_by_station()
     {
         $user = User::factory()
@@ -320,6 +317,7 @@ class MaterialMovementAPITest extends TestCase
         }
     }
 
+    // 2
     public function test_material_movement_api_call_get_statistic_ritage_per_day_by_station()
     {
         $user = User::factory()
@@ -347,33 +345,7 @@ class MaterialMovementAPITest extends TestCase
         }
     }
 
-    public function test_material_movement_api_call_get_statistic_measurement_volume_by_station()
-    {
-        $user = User::factory()
-            ->hasAttached(Role::where('name', '=', UserRoleEnum::ADMIN)->first())
-            ->create();
-
-        $this->actingAs($user);
-
-        $statisticTypes = AggregateFunctionEnum::toArrayValue();
-        $datePeriods = DatePeriodEnum::toArrayValue();
-        $stationCategories = [StationCategoryEnum::QUARY->value, StationCategoryEnum::DISPOSAL->value];
-
-        foreach ($statisticTypes as $statisticType) {
-            foreach ($datePeriods as $datePeriod) {
-                foreach ($stationCategories as $stationCategory) {
-                    $response = $this->json('GET', '/api/v1/material-movements/read/statistic-measurement-volume-by-station', [
-                        'statistic_type' => $statisticType,
-                        'date_type' => $datePeriod,
-                        'station_category' => $stationCategory,
-                    ]);
-
-                    $response->assertSuccessful();
-                }
-            }
-        }
-    }
-
+    // 3
     public function test_material_movement_api_call_get_statistic_ritage_volume_by_station()
     {
         $user = User::factory()
@@ -401,6 +373,35 @@ class MaterialMovementAPITest extends TestCase
         }
     }
 
+    // 4
+    public function test_material_movement_api_call_get_statistic_measurement_volume_by_station()
+    {
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRoleEnum::ADMIN)->first())
+            ->create();
+
+        $this->actingAs($user);
+
+        $statisticTypes = AggregateFunctionEnum::toArrayValue();
+        $datePeriods = DatePeriodEnum::toArrayValue();
+        $stationCategories = [StationCategoryEnum::QUARY->value, StationCategoryEnum::DISPOSAL->value];
+
+        foreach ($statisticTypes as $statisticType) {
+            foreach ($datePeriods as $datePeriod) {
+                foreach ($stationCategories as $stationCategory) {
+                    $response = $this->json('GET', '/api/v1/material-movements/read/statistic-measurement-volume-by-station', [
+                        'statistic_type' => $statisticType,
+                        'date_type' => $datePeriod,
+                        'station_category' => $stationCategory,
+                    ]);
+
+                    $response->assertSuccessful();
+                }
+            }
+        }
+    }
+
+    // 5
     public function test_material_movement_api_call_get_ratio_measurement_by_ritage()
     {
         $user = User::factory()

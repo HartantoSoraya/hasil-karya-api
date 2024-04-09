@@ -18,33 +18,7 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
         $materialMovements = MaterialMovement::with('driver', 'truck', 'station', 'checker')
             ->orderBy('date', 'desc')->get();
 
-        $lastDate = MaterialMovementSolidVolumeEstimate::orderBy('date', 'desc')->first();
-
-        if ($lastDate) {
-            $lastDate = $lastDate->date;
-        } else {
-            $lastDate = Carbon::now();
-        }
-
-        $solidVolumeEstimateTotal = MaterialMovementSolidVolumeEstimate::select('station_id', DB::raw('SUM(solid_volume_estimate) as value'))
-            ->where('date', '<=', $lastDate)
-            ->groupBy('station_id')
-            ->get();
-
-        $observationRatioTotal = MaterialMovement::select('station_id', DB::raw('SUM(observation_ratio) as value'))
-            ->where('date', '<=', $lastDate)
-            ->groupBy('station_id')
-            ->get();
-
-        $materialMovements = $materialMovements->map(function ($item) use ($solidVolumeEstimateTotal, $observationRatioTotal) {
-            $solidVolumeEstimateTotalItem = $solidVolumeEstimateTotal->where('station_id', $item['station_id'])->first();
-            $observationRatioTotalItem = $observationRatioTotal->where('station_id', $item['station_id'])->first();
-
-            $item['solid_ratio'] = ($solidVolumeEstimateTotalItem['value'] + 0 ?? 0) / ($observationRatioTotalItem['value'] + 0);
-            $item['solid_volume_estimate'] = $item['observation_ratio'] * $item['solid_ratio'];
-
-            return $item;
-        });
+        $materialMovements = $this->processMaterialMovements($materialMovements);
 
         return $materialMovements;
     }
@@ -60,8 +34,6 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
         $materialMovement->date = $data['date'];
         $materialMovement->truck_capacity = $data['truck_capacity'];
         $materialMovement->observation_ratio = $data['observation_ratio'];
-        $materialMovement->solid_ratio = $data['solid_ratio'];
-        $materialMovement->solid_volume_estimate = $materialMovement->observation_ratio * $data['solid_ratio'];
         $materialMovement->remarks = $data['remarks'];
         $materialMovement->save();
 
@@ -81,43 +53,34 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
         try {
             $materialMovements = MaterialMovement::with('driver', 'truck', 'station', 'checker')
                 ->where('truck_id', $truckId)
-                ->orderBy('date', 'desc')->get();
+                ->orderBy('date', 'asc')->get();
 
-            $materialMovements = $materialMovements->map(function ($item, $key) use ($materialMovements) {
+            $previousDate = Carbon::parse('1900-01-01');
+            $materialMovements = $materialMovements->map(function ($item, $key) use (&$previousDate) {
+                $date = Carbon::parse($item['date']);
+
                 if ($key == 0) {
-                    $item['date_difference'] = 0;
+                    $previousDate = $date;
+                    $item['date_difference'] = '';
                 } else {
-                    $date = Carbon::parse($item['date']);
-                    $previousDate = Carbon::parse($materialMovements[$key - 1]['date']);
-
-                    $days = $date->diffInDays($previousDate);
-                    $hours = $date->diffInHours($previousDate) % 24;
-                    $minutes = $date->diffInMinutes($previousDate) % 60;
-                    $seconds = $date->diffInSeconds($previousDate) % 60;
-
+                    $currentDate = $date;
                     $differenceString = '';
 
-                    if ($days > 0) {
-                        $differenceString .= "$days hari";
-                    }
-
-                    if ($hours > 0) {
-                        $differenceString .= ", $hours jam";
-                    }
-
-                    if ($minutes > 0) {
-                        $differenceString .= ", $minutes menit";
-                    }
-
-                    if ($seconds > 0) {
-                        $differenceString .= ", $seconds detik";
+                    if ($currentDate->isSameDay($previousDate)) {
+                        $difference = $currentDate->diff($previousDate);
+                        $differenceString = $difference->format('%h jam %i menit %s detik');
                     }
 
                     $item['date_difference'] = $differenceString;
+                    $previousDate = $currentDate;
                 }
 
                 return $item;
             });
+
+            $materialMovements = $materialMovements->sortByDesc('date')->values();
+
+            $materialMovements = $this->processMaterialMovements($materialMovements);
 
             return $materialMovements;
         } catch (\Exception $e) {
@@ -128,19 +91,6 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
     // 1
     public function getStatisticTruckPerDayByStation($statisticType = null, $dateType = null, $stationCategory = null)
     {
-        $rawQuery = '';
-        if ($statisticType == AggregateFunctionEnum::MIN->value) {
-            $rawQuery = 'MIN(material_movements.truck_id) as value';
-        } elseif ($statisticType == AggregateFunctionEnum::MAX->value) {
-            $rawQuery = 'MAX(material_movements.truck_id) as value';
-        } elseif ($statisticType == AggregateFunctionEnum::AVG->value) {
-            $rawQuery = 'AVG(material_movements.truck_id) as value';
-        } elseif ($statisticType == AggregateFunctionEnum::SUM->value) {
-            $rawQuery = 'SUM(material_movements.truck_id) as value';
-        } elseif ($statisticType == AggregateFunctionEnum::COUNT->value) {
-            $rawQuery = 'COUNT(material_movements.truck_id) as value';
-        }
-
         $startDate = Carbon::now()->startOfDay();
         $endDate = Carbon::now()->endOfDay();
 
@@ -158,23 +108,44 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
             $endDate = Carbon::now()->endOfYear();
         } elseif ($dateType == DatePeriodEnum::ALL->value) {
             $startDate = MaterialMovement::orderBy('date', 'asc')->first()->date;
+            $startDate = Carbon::parse($startDate)->startOfDay();
+
             $endDate = MaterialMovement::orderBy('date', 'desc')->first()->date;
+            $endDate = Carbon::parse($endDate)->endOfDay();
         }
 
-        $result = MaterialMovement::select('material_movements.station_id as station', DB::raw($rawQuery))
+        $data = MaterialMovement::select('material_movements.station_id as station', DB::raw('COUNT(material_movements.truck_id) as value'))
             ->leftJoin('stations', 'stations.id', '=', 'material_movements.station_id')
             ->whereBetween(DB::raw('DATE(material_movements.date)'), [$startDate, $endDate])
             ->where('stations.category', $stationCategory)
-            ->groupBy('material_movements.station_id', 'material_movements.truck_id')
+            ->groupBy('material_movements.station_id', DB::raw('DATE(material_movements.date)'))
             ->orderBy('stations.name', 'ASC')
             ->get();
 
-        $result = $result->map(function ($item) {
-            $item['station'] = Station::find($item['station'])->name;
-            $item['value'] = is_numeric($item['value']) ? $item['value'] * 1 : $item['value'];
+        $station_ids = $data->pluck('station')->unique();
+        $stations = Station::whereIn('id', $station_ids)->get()->toArray();
 
-            return $item;
-        });
+        $result = [];
+        foreach ($stations as $station) {
+            $stationData = $data->where('station', $station['id']);
+            $value = 0;
+            if ($statisticType == AggregateFunctionEnum::MIN->value) {
+                $value = $stationData->min('value');
+            } elseif ($statisticType == AggregateFunctionEnum::MAX->value) {
+                $value = $stationData->max('value');
+            } elseif ($statisticType == AggregateFunctionEnum::AVG->value) {
+                $value = $stationData->avg('value');
+            } elseif ($statisticType == AggregateFunctionEnum::SUM->value) {
+                $value = $stationData->sum('value');
+            } elseif ($statisticType == AggregateFunctionEnum::COUNT->value) {
+                $value = $stationData->count();
+            }
+
+            $result[] = [
+                'station' => $station['name'],
+                'value' => $value,
+            ];
+        }
 
         $result = response()->json($result);
 
@@ -214,7 +185,10 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
             $endDate = Carbon::now()->endOfYear();
         } elseif ($dateType == DatePeriodEnum::ALL->value) {
             $startDate = MaterialMovement::orderBy('date', 'asc')->first()->date;
+            $startDate = Carbon::parse($startDate)->startOfDay();
+
             $endDate = MaterialMovement::orderBy('date', 'desc')->first()->date;
+            $endDate = Carbon::parse($endDate)->endOfDay();
         }
 
         $result = MaterialMovement::select('material_movements.station_id as station', DB::raw($rawQuery))
@@ -238,7 +212,7 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
     }
 
     // 3
-    public function getStatisticMeasurementVolumeByStation($statisticType = null, $dateType = null, $stationCategory = null)
+    public function getStatisticRitageVolumeByStation($statisticType = null, $dateType = null, $stationCategory = null)
     {
         $rawQuery = '';
         if ($statisticType == AggregateFunctionEnum::MIN->value) {
@@ -270,7 +244,10 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
             $endDate = Carbon::now()->endOfYear();
         } elseif ($dateType == DatePeriodEnum::ALL->value) {
             $startDate = MaterialMovement::orderBy('date', 'asc')->first()->date;
+            $startDate = Carbon::parse($startDate)->startOfDay();
+
             $endDate = MaterialMovement::orderBy('date', 'desc')->first()->date;
+            $endDate = Carbon::parse($endDate)->endOfDay();
         }
 
         $result = MaterialMovement::select('material_movements.station_id as station', DB::raw($rawQuery))
@@ -294,19 +271,19 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
     }
 
     // 4
-    public function getStatisticRitageVolumeByStation($statisticType = null, $dateType = null, $stationCategory = null)
+    public function getStatisticMeasurementVolumeByStation($statisticType = null, $dateType = null, $stationCategory = null)
     {
         $rawQuery = '';
         if ($statisticType == AggregateFunctionEnum::MIN->value) {
-            $rawQuery = 'MIN(material_movements.solid_volume_estimate) as value';
+            $rawQuery = 'MIN(material_movement_solid_volume_estimates.solid_volume_estimate) as value';
         } elseif ($statisticType == AggregateFunctionEnum::MAX->value) {
-            $rawQuery = 'MAX(material_movements.solid_volume_estimate) as value';
+            $rawQuery = 'MAX(material_movement_solid_volume_estimates.solid_volume_estimate) as value';
         } elseif ($statisticType == AggregateFunctionEnum::AVG->value) {
-            $rawQuery = 'AVG(material_movements.solid_volume_estimate) as value';
+            $rawQuery = 'AVG(material_movement_solid_volume_estimates.solid_volume_estimate) as value';
         } elseif ($statisticType == AggregateFunctionEnum::SUM->value) {
-            $rawQuery = 'SUM(material_movements.solid_volume_estimate) as value';
+            $rawQuery = 'SUM(material_movement_solid_volume_estimates.solid_volume_estimate) as value';
         } elseif ($statisticType == AggregateFunctionEnum::COUNT->value) {
-            $rawQuery = 'COUNT(material_movements.solid_volume_estimate) as value';
+            $rawQuery = 'COUNT(material_movement_solid_volume_estimates.solid_volume_estimate) as value';
         }
 
         $startDate = Carbon::now()->startOfDay();
@@ -325,21 +302,24 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
             $startDate = Carbon::now()->startOfYear();
             $endDate = Carbon::now()->endOfYear();
         } elseif ($dateType == DatePeriodEnum::ALL->value) {
-            $startDate = MaterialMovement::orderBy('date', 'asc')->first()->date;
-            $endDate = MaterialMovement::orderBy('date', 'desc')->first()->date;
+            $startDate = MaterialMovementSolidVolumeEstimate::orderBy('date', 'asc')->first()->date;
+            $startDate = Carbon::parse($startDate)->startOfDay();
+
+            $endDate = MaterialMovementSolidVolumeEstimate::orderBy('date', 'desc')->first()->date;
+            $endDate = Carbon::parse($endDate)->endOfDay();
         }
 
-        $result = MaterialMovement::select('material_movements.station_id as station', DB::raw($rawQuery))
-            ->leftJoin('stations', 'stations.id', '=', 'material_movements.station_id')
-            ->whereBetween(DB::raw('DATE(material_movements.date)'), [$startDate, $endDate])
+        $result = MaterialMovementSolidVolumeEstimate::select('material_movement_solid_volume_estimates.station_id as station', DB::raw($rawQuery))
+            ->leftJoin('stations', 'stations.id', '=', 'material_movement_solid_volume_estimates.station_id')
+            ->whereBetween(DB::raw('DATE(material_movement_solid_volume_estimates.date)'), [$startDate, $endDate])
             ->where('stations.category', $stationCategory)
-            ->groupBy('material_movements.station_id')
+            ->groupBy('material_movement_solid_volume_estimates.station_id')
             ->orderBy('stations.name', 'ASC')
             ->get();
 
         $result = $result->map(function ($item) {
             $item['station'] = Station::find($item['station'])->name;
-            $item['value'] = is_numeric($item['value']) ? $item['value'] * 1 : $item['value'];
+            $item['value'] = is_numeric($item['value']) ? $item['value'] * 1 : 0;
 
             return $item;
         });
@@ -352,52 +332,21 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
     // 5
     public function getRatioMeasurementByRitage($statisticType = null, $dateType = null, $stationCategory = null)
     {
-        $startDate = Carbon::now()->startOfDay();
-        $endDate = Carbon::now()->endOfDay();
+        $observationRatios = $this->getStatisticRitageVolumeByStation(AggregateFunctionEnum::SUM->value, $dateType, $stationCategory);
+        $observationRatios = json_decode($observationRatios->content(), true);
+        $observationRatios = collect($observationRatios);
 
-        if ($dateType == DatePeriodEnum::TODAY->value) {
-            $startDate = Carbon::now()->startOfDay();
-            $endDate = Carbon::now()->endOfDay();
-        } elseif ($dateType == DatePeriodEnum::WEEK->value) {
-            $startDate = Carbon::now()->startOfWeek();
-            $endDate = Carbon::now()->endOfWeek();
-        } elseif ($dateType == DatePeriodEnum::MONTH->value) {
-            $startDate = Carbon::now()->startOfMonth();
-            $endDate = Carbon::now()->endOfMonth();
-        } elseif ($dateType == DatePeriodEnum::YEAR->value) {
-            $startDate = Carbon::now()->startOfYear();
-            $endDate = Carbon::now()->endOfYear();
-        } elseif ($dateType == DatePeriodEnum::ALL->value) {
-            $startDate = MaterialMovement::orderBy('date', 'asc')->first()->date;
-            $endDate = MaterialMovement::orderBy('date', 'desc')->first()->date;
-        }
+        $solidVolumeEstimates = $this->getStatisticMeasurementVolumeByStation(AggregateFunctionEnum::SUM->value, $dateType, $stationCategory);
+        $solidVolumeEstimates = json_decode($solidVolumeEstimates->content(), true);
+        $solidVolumeEstimates = collect($solidVolumeEstimates);
 
-        $observationRatio = MaterialMovement::select('material_movements.station_id as station', DB::raw('SUM(material_movements.observation_ratio) as value'))
-            ->leftJoin('stations', 'stations.id', '=', 'material_movements.station_id')
-            ->whereBetween(DB::raw('DATE(material_movements.date)'), [$startDate, $endDate])
-            ->where('stations.category', $stationCategory)
-            ->groupBy('material_movements.station_id')
-            ->orderBy('stations.name', 'ASC')
-            ->get();
-
-        $solidVolumeEstimate = MaterialMovement::select('material_movements.station_id as station', DB::raw('SUM(material_movements.solid_volume_estimate) as value'))
-            ->leftJoin('stations', 'stations.id', '=', 'material_movements.station_id')
-            ->whereBetween(DB::raw('DATE(material_movements.date)'), [$startDate, $endDate])
-            ->where('stations.category', $stationCategory)
-            ->groupBy('material_movements.station_id')
-            ->orderBy('stations.name', 'ASC')
-            ->get();
-
-        $result = $observationRatio->map(function ($item) use ($solidVolumeEstimate) {
-            $solidVolumeEstimateItem = $solidVolumeEstimate->where('station', $item['station'])->first();
-            $item['value'] = $solidVolumeEstimateItem['value'] / $item['value'];
-
-            return $item;
-        });
-
-        $result = $result->map(function ($item) {
-            $item['station'] = Station::find($item['station'])->name;
-            $item['value'] = is_numeric($item['value']) ? $item['value'] * 1 : $item['value'];
+        $result = $observationRatios->map(function ($item) use ($solidVolumeEstimates) {
+            $solidVolumeEstimateItem = $solidVolumeEstimates->where('station', $item['station'])->first();
+            if ($solidVolumeEstimateItem) {
+                $item['value'] = $solidVolumeEstimateItem['value'] / $item['value'];
+            } else {
+                $item['value'] = 0;
+            }
 
             return $item;
         });
@@ -418,8 +367,6 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
         $materialMovement->date = $data['date'];
         $materialMovement->truck_capacity = $data['truck_capacity'];
         $materialMovement->observation_ratio = $data['observation_ratio'];
-        $materialMovement->solid_ratio = $data['solid_ratio'];
-        $materialMovement->solid_volume_estimate = $materialMovement->observation_ratio * $data['solid_ratio'];
         $materialMovement->remarks = $data['remarks'];
         $materialMovement->save();
 
@@ -450,5 +397,40 @@ class MaterialMovementRepository implements MaterialMovementRepositoryInterface
         }
 
         return $query->doesntExist();
+    }
+
+    private function processMaterialMovements($SourceMaterialMovements)
+    {
+        $materialMovements = $SourceMaterialMovements;
+
+        $lastDate = MaterialMovementSolidVolumeEstimate::orderBy('date', 'desc')->first();
+
+        if ($lastDate) {
+            $lastDate = $lastDate->date;
+        } else {
+            $lastDate = Carbon::now();
+        }
+
+        $solidVolumeEstimateTotal = MaterialMovementSolidVolumeEstimate::select('station_id', DB::raw('SUM(solid_volume_estimate) as value'))
+            ->where('date', '<=', $lastDate)
+            ->groupBy('station_id')
+            ->get();
+
+        $observationRatioTotal = MaterialMovement::select('station_id', DB::raw('SUM(observation_ratio) as value'))
+            ->where('date', '<=', $lastDate)
+            ->groupBy('station_id')
+            ->get();
+
+        $materialMovements = $materialMovements->map(function ($item) use ($solidVolumeEstimateTotal, $observationRatioTotal) {
+            $solidVolumeEstimateTotalItem = $solidVolumeEstimateTotal->where('station_id', $item['station_id'])->first();
+            $observationRatioTotalItem = $observationRatioTotal->where('station_id', $item['station_id'])->first();
+
+            $item['solid_ratio'] = ($solidVolumeEstimateTotalItem['value'] ?? 0) / ($observationRatioTotalItem['value'] + 0);
+            $item['solid_volume_estimate'] = $item['observation_ratio'] * $item['solid_ratio'];
+
+            return $item;
+        });
+
+        return $materialMovements;
     }
 }

@@ -26,8 +26,6 @@ return new class extends Migration
             $table->datetime('date');
             $table->decimal('truck_capacity', 30, 8)->default(0);
             $table->decimal('observation_ratio', 30, 8)->default(0);
-            $table->decimal('solid_ratio', 30, 8)->default(0);
-            $table->decimal('solid_volume_estimate', 30, 8)->default(0);
             $table->text('remarks')->nullable();
 
             $table->softDeletes();
