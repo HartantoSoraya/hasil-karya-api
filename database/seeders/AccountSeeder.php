@@ -13,8 +13,10 @@ class AccountSeeder extends Seeder
      */
     public function run(): void
     {
+        $appname = config('app.name');
+
         User::create([
-            'email' => 'admin@cvhasilkarya.co.id',
+            'email' => 'admin@'.str_replace(' ', '', strtolower($appname)).'.co.id',
             'password' => bcrypt('password'),
         ])->assignRole(UserRoleEnum::ADMIN->value);
     }
