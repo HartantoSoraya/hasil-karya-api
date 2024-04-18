@@ -229,6 +229,7 @@ Route::middleware(['auth:sanctum', 'role:gas-operator'])->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'role:technical-admin'])->group(function () {
-    Route::get('technical-admin/material-movement/{id}', [MaterialMovementController::class, 'show']);
-    Route::post('technical-admin/material-movement/update/{id}', [MaterialMovementController::class, 'update']);
+    Route::post('technical-admin/material-movement-solid-volume-estimate/store', [MaterialMovementSolidVolumeEstimateController::class, 'store']);
+    Route::get('technical-admin/material-movement-solid-volume-estimate/show/{id}', [MaterialMovementSolidVolumeEstimateController::class, 'show']);
+    Route::post('technical-admin/material-movement-solid-volume-estimate/update/{id}', [MaterialMovementSolidVolumeEstimateController::class, 'update']);
 });

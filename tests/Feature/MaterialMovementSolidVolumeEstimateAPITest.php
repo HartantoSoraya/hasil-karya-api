@@ -50,9 +50,7 @@ class MaterialMovementSolidVolumeEstimateAPITest extends TestCase
 
         $materialMovementSolidVolumeEstimate = MaterialMovementSolidVolumeEstimate::factory()
             ->for($station)
-            ->make([
-                'code' => 'AUTO',
-            ])->toArray();
+            ->make(['code' => 'AUTO'])->toArray();
 
         $response = $this->json('POST', '/api/v1/material-movement-solid-volume-estimate', $materialMovementSolidVolumeEstimate);
 
@@ -76,18 +74,58 @@ class MaterialMovementSolidVolumeEstimateAPITest extends TestCase
         foreach ($stations as $station) {
             $materialMovementSolidVolumeEstimate = MaterialMovementSolidVolumeEstimate::factory()
                 ->for($station)
-                ->make([
-                    'code' => 'AUTO',
-                ])->toArray();
+                ->make(['code' => 'AUTO'])->toArray();
 
             $response = $this->json('POST', '/api/v1/material-movement-solid-volume-estimate', $materialMovementSolidVolumeEstimate);
 
             $response->assertSuccessful();
         }
+    }
 
-        $response = $this->json('POST', '/api/v1/material-movement-solid-volume-estimate', $materialMovementSolidVolumeEstimate);
+    public function test_material_movement_solid_volume_estimate_api_call_create_with_auto_code_by_technical_admin_user_expect_success()
+    {
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRoleEnum::TECHNICAL_ADMIN)->first())
+            ->create();
+
+        $this->actingAs($user);
+
+        $station = Station::factory()->create(
+            ['is_active' => true]
+        );
+
+        $materialMovementSolidVolumeEstimate = MaterialMovementSolidVolumeEstimate::factory()
+            ->for($station)
+            ->make(['code' => 'AUTO'])->toArray();
+
+        $response = $this->json('POST', '/api/v1/technical-admin/material-movement-solid-volume-estimate/store', $materialMovementSolidVolumeEstimate);
 
         $response->assertSuccessful();
+    }
+
+    public function test_material_movement_solid_volume_estimate_api_call_create_with_auto_code_with_all_existing_station_by_technical_admin_user_expect_success()
+    {
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRoleEnum::TECHNICAL_ADMIN)->first())
+            ->create();
+
+        $this->actingAs($user);
+
+        $stations = Station::where('is_active', true)->get();
+
+        if (! $stations) {
+            $this->markTestSkipped('No active station found');
+        }
+
+        foreach ($stations as $station) {
+            $materialMovementSolidVolumeEstimate = MaterialMovementSolidVolumeEstimate::factory()
+                ->for($station)
+                ->make(['code' => 'AUTO'])->toArray();
+
+            $response = $this->json('POST', '/api/v1/technical-admin/material-movement-solid-volume-estimate/store', $materialMovementSolidVolumeEstimate);
+
+            $response->assertSuccessful();
+        }
     }
 
     public function test_material_movement_solid_volume_estimate_api_call_show_expect_success()
@@ -103,6 +141,23 @@ class MaterialMovementSolidVolumeEstimateAPITest extends TestCase
             ->create();
 
         $response = $this->json('GET', '/api/v1/material-movement-solid-volume-estimate/'.$materialMovementSolidVolumeEstimate->id);
+
+        $response->assertSuccessful();
+    }
+
+    public function test_material_movement_solid_volume_estimate_api_call_show_by_technical_admin_user_expect_success()
+    {
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRoleEnum::TECHNICAL_ADMIN)->first())
+            ->create();
+
+        $this->actingAs($user);
+
+        $materialMovementSolidVolumeEstimate = MaterialMovementSolidVolumeEstimate::factory()
+            ->for(Station::factory())
+            ->create();
+
+        $response = $this->json('GET', '/api/v1/technical-admin/material-movement-solid-volume-estimate/show/'.$materialMovementSolidVolumeEstimate->id);
 
         $response->assertSuccessful();
     }
@@ -126,6 +181,29 @@ class MaterialMovementSolidVolumeEstimateAPITest extends TestCase
             ->for($station)->make()->toArray();
 
         $response = $this->json('POST', '/api/v1/material-movement-solid-volume-estimate/'.$existingMaterialMovementSolidVolumeEstimate->id, $materialMovementSolidVolumeEstimate);
+
+        $response->assertSuccessful();
+    }
+
+    public function test_material_movement_solid_volume_estimate_api_call_update_by_technical_admin_user_expect_success()
+    {
+        $user = User::factory()
+            ->hasAttached(Role::where('name', '=', UserRoleEnum::TECHNICAL_ADMIN)->first())
+            ->create();
+
+        $this->actingAs($user);
+
+        $station = Station::factory()->create(
+            ['is_active' => true]
+        );
+
+        $existingMaterialMovementSolidVolumeEstimate = MaterialMovementSolidVolumeEstimate::factory()
+            ->for($station)->create();
+
+        $materialMovementSolidVolumeEstimate = MaterialMovementSolidVolumeEstimate::factory()
+            ->for($station)->make()->toArray();
+
+        $response = $this->json('POST', '/api/v1/technical-admin/material-movement-solid-volume-estimate/update/'.$existingMaterialMovementSolidVolumeEstimate->id, $materialMovementSolidVolumeEstimate);
 
         $response->assertSuccessful();
     }
